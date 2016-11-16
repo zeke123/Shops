@@ -31,6 +31,7 @@ public class ShopsDetailActivity extends Activity {
 
     }
 
+
     @Override
     protected void onRestart() {
         super.onRestart();
