@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.thinker.shops.activity.MainActivity">
 
     <RelativeLayout
@@ -26,7 +26,7 @@
             android:layout_height="25dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
+            android:layout_marginRight="20dp"
             android:background="@mipmap/personal"/>
 
         <ImageButton
@@ -34,7 +34,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
+            android:layout_marginRight="20dp"
             android:layout_toLeftOf="@id/im_personal"
             android:background="@mipmap/start"/>
 
@@ -43,7 +43,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
+            android:layout_marginRight="20dp"
             android:layout_toLeftOf="@id/im_start"
             android:background="@mipmap/flush"/>
     </RelativeLayout>
@@ -53,9 +53,8 @@
         android:id="@+id/mGridViewImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="15dp"
-        android:horizontalSpacing="6dp"
+        android:layout_margin="5dp"
+        android:horizontalSpacing="10dp"
         android:numColumns="3"
-        android:verticalSpacing="6dp" />
+        android:verticalSpacing="10dp"/>
 </LinearLayout>
