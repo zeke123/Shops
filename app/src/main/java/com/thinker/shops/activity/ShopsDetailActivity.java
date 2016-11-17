@@ -13,19 +13,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
+import com.thinker.shops.MyApplication;
 import com.thinker.shops.R;
 import com.thinker.shops.bean.DataItem;
 import com.thinker.shops.utils.DensityUtils;
 import com.thinker.shops.view.MenuGridView;
 import com.thinker.shops.volley.VolleyInterface;
 import com.thinker.shops.volley.VolleyRequest;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -125,13 +123,8 @@ public class ShopsDetailActivity extends Activity {
                     @Override
                     public void onClick(View view) {
                         objectId = mList.get(position).getObjectId();
-
-
                         //点击请求服务器获取新的图片
-
                         initPictureData(holder.im_botoom, holder.ll_bottom_right, holder.im_download);
-
-
                     }
                 });
             }
@@ -176,32 +169,39 @@ public class ShopsDetailActivity extends Activity {
     }
 
     @Override
-    protected void onRestart() {
+    protected void onRestart()
+    {
         super.onRestart();
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart()
+    {
         super.onStart();
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
     }
 
     @Override
-    protected void onStop() {
+    protected void onStop()
+    {
         super.onStop();
+        MyApplication.getHttpQueues().cancelAll("myTag");
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+    {
         super.onDestroy();
     }
 }
