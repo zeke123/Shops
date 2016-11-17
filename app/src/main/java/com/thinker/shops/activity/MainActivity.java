@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void onMySuccess(String resault)
                     {
-                        Toast.makeText(getApplicationContext(),resault.toString(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(),resault.toString(), Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "resault============"+resault.toString());
                         Gson gson = new Gson();
                         JsonDatas  mDatas = gson.fromJson(resault.toString(), JsonDatas.class);
