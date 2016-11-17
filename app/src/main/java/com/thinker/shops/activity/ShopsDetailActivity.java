@@ -38,7 +38,8 @@ public class ShopsDetailActivity extends Activity
     private ArrayList<DataItem> mList;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_shops_detail);
@@ -50,7 +51,8 @@ public class ShopsDetailActivity extends Activity
         initData();
     }
 
-    private void initData() {
+    private void initData()
+    {
         MyAdater adater = new MyAdater();
         mMGridViewImage.setAdapter(adater);
         mMGridViewImage.setSelector(R.color.transparent);
@@ -65,17 +67,14 @@ public class ShopsDetailActivity extends Activity
             }
             return 0;
         }
-
         public Object getItem(int position)
         {
             return null;
         }
-
         public long getItemId(int position)
         {
             return 0;
         }
-
         public View getView(int position, View convertView, ViewGroup parent)
         {
             View view;
@@ -107,7 +106,8 @@ public class ShopsDetailActivity extends Activity
                 param.height=pictureWidth;
                 view.setTag(holder);
             }
-            if(mList!=null && mList.size()>0){
+            if(mList!=null && mList.size()>0)
+            {
                 mShowimg = mList.get(position).getShowimg();
                 Glide.with(ShopsDetailActivity.this).load(mShowimg).into(holder.im_picture );
             }
