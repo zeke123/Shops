@@ -36,9 +36,7 @@ import butterknife.InjectView;
 
 public class ShopsDetailActivity extends Activity
 {
-
     public static final String TAG = "ShopsDetailActivity";
-
     private ArrayList<String>  pictureList = new ArrayList<String>();
     @InjectView(R.id.im_personal)
     ImageButton mImPersonal;
@@ -53,7 +51,6 @@ public class ShopsDetailActivity extends Activity
     private long objectId;
     private ArrayList<DataItem> mList;
     private String img_path;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +89,6 @@ public class ShopsDetailActivity extends Activity
                 Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
                 return;
             }
-
         }
     });
     }
@@ -104,7 +100,8 @@ public class ShopsDetailActivity extends Activity
         mMGridViewImage.setSelector(R.color.transparent);
     }
 
-    class MyAdater extends BaseAdapter {
+    class MyAdater extends BaseAdapter
+    {
         private String mShowimg;
 
         public int getCount() {
@@ -246,7 +243,8 @@ public class ShopsDetailActivity extends Activity
     /**
      * 获取SD卡路径
      */
-    public static String getSDCardPath() {
+    public static String getSDCardPath()
+    {
         if (sdCardIsExit()) {
             return Environment.getExternalStorageDirectory().toString() + "/";
         }
