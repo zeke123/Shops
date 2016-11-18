@@ -1,7 +1,13 @@
 package com.thinker.shops.activity;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,17 +19,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
-import com.thinker.shops.MyApplication;
 import com.thinker.shops.R;
 import com.thinker.shops.bean.DataItem;
+import com.thinker.shops.http.HttpClient;
 import com.thinker.shops.utils.DensityUtils;
 import com.thinker.shops.view.MenuGridView;
-import com.thinker.shops.volley.VolleyInterface;
-import com.thinker.shops.volley.VolleyRequest;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -31,9 +34,12 @@ import butterknife.InjectView;
  * Created by zhoujian on 2016/11/16.
  */
 
-public class ShopsDetailActivity extends Activity {
+public class ShopsDetailActivity extends Activity
+{
 
     public static final String TAG = "ShopsDetailActivity";
+
+    private ArrayList<String>  pictureList = new ArrayList<String>();
     @InjectView(R.id.im_personal)
     ImageButton mImPersonal;
     @InjectView(R.id.im_start)
@@ -46,6 +52,8 @@ public class ShopsDetailActivity extends Activity {
     private String commuityOid;
     private long objectId;
     private ArrayList<DataItem> mList;
+    private String img_path;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +66,39 @@ public class ShopsDetailActivity extends Activity {
         commuityOid = getIntent().getStringExtra("mId");
         mList = (ArrayList<DataItem>) getIntent().getSerializableExtra("mList");
         initData();
+        clickEvent();
     }
 
-    private void initData() {
+    private void clickEvent()
+    {
+        mImPersonal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ShopsDetailActivity.this,MainActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
+        mImStart.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            if(pictureList!=null && pictureList.size()>0){
+                Intent intent = new Intent(ShopsDetailActivity.this,KannerActivity.class);
+                intent.putStringArrayListExtra("pictureList",pictureList);
+                startActivity(intent);
+            }else{
+                Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+        }
+    });
+    }
+
+    private void initData()
+    {
         MyAdater adater = new MyAdater();
         mMGridViewImage.setAdapter(adater);
         mMGridViewImage.setSelector(R.color.transparent);
@@ -115,7 +153,9 @@ public class ShopsDetailActivity extends Activity {
             if (mList != null && mList.size() > 0) {
                 mShowimg = mList.get(position).getShowimg();
                 String newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
+
                 Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
+
                 holder.tv_product_name.setText(mList.get(position).getProductName());
 
                 holder.im_download.setOnClickListener(new View.OnClickListener() {
@@ -123,8 +163,61 @@ public class ShopsDetailActivity extends Activity {
                     @Override
                     public void onClick(View view) {
                         objectId = mList.get(position).getObjectId();
-                        //点击请求服务器获取新的图片
-                        initPictureData(holder.im_botoom, holder.ll_bottom_right, holder.im_download);
+                        Log.e(TAG,"objectId=="+objectId);
+                        String  pathUrl= "http://192.168.1.57:8080/task/mall/paddemo/postimg.do?objectId=" +objectId+"&communityOid="+commuityOid;
+                        Log.e(TAG,"pathUrl=="+pathUrl);
+                        pictureList.add(pathUrl);
+                        //开启线程下载图片
+                        startDownLoaad(pathUrl);
+                    }
+                    private void startDownLoaad(final String imgUrl)
+                    {
+                        final  Handler hander = new Handler(){
+                            @Override
+                            public void handleMessage(Message msg) {
+                                Bitmap bm = BitmapFactory.decodeFile(img_path);
+                                Log.e(TAG,"bm==="+bm);
+                                Log.e(TAG,"img_path==="+img_path);
+                                holder.im_picture.setImageBitmap(bm);
+                                bm.recycle();
+                                holder.im_botoom.setVisibility(View.GONE);
+                                holder.ll_bottom_right.setVisibility(View.VISIBLE);
+                                holder.im_download.setVisibility(View.GONE);
+                            }
+                        };
+                        Thread thread = new Thread()
+                        {
+                            public void run()
+                            {
+                                try
+                                {
+                                    HttpClient httpClient = new HttpClient();
+                                    byte[] byteData = httpClient.getData(imgUrl);
+                                    // SD卡的路径
+                                    String sdCardPath = getSDCardPath();
+                                        if (sdCardIsExit())
+                                        {
+                                            // 图片的保存路
+                                            img_path = sdCardPath + java.lang.System.currentTimeMillis() + ".jpg";
+                                            FileOutputStream fos = new FileOutputStream(img_path, false);
+                                            // 把图片写到本地
+                                            fos.write(byteData);
+                                            // 刷新
+                                            fos.flush();
+                                            // 关流
+                                            fos.close();
+                                            Message msg = hander.obtainMessage();
+                                            msg.what = 1;
+                                            hander.sendMessage(msg);
+                                        }
+                                }
+                                catch (Exception e)
+                                {
+                                    e.printStackTrace();
+                                }
+                            }
+                        };
+                        thread.start();
                     }
                 });
             }
@@ -143,65 +236,50 @@ public class ShopsDetailActivity extends Activity {
         }
     }
 
-    private void initPictureData(final ImageView view,final LinearLayout ll,final ImageView downImag) {
+    /**
+     * 判断SD卡是否可用
+     */
+    private static boolean sdCardIsExit() {
+        return Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+    }
 
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("objectId", objectId + "");
-        params.put("commuityOid", commuityOid);
-
-        VolleyRequest.requestPost(getApplicationContext(), "http://192.168.1.57:8080/task/mall/paddemo/postimg.do", "myTag", params, new VolleyInterface(ShopsDetailActivity.this, VolleyInterface.mListener, VolleyInterface.mErrorListener) {
-            @Override
-            public void onMySuccess(String resault)
-            {
-                //Toast.makeText(getApplicationContext(), resault.toString(), Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "resault============" + resault.toString());
-                view.setVisibility(View.GONE);
-                ll.setVisibility(View.VISIBLE);
-                downImag.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onMyError(VolleyError error)
-            {
-                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+    /**
+     * 获取SD卡路径
+     */
+    public static String getSDCardPath() {
+        if (sdCardIsExit()) {
+            return Environment.getExternalStorageDirectory().toString() + "/";
+        }
+        return null;
     }
 
     @Override
-    protected void onRestart()
-    {
+    protected void onRestart() {
         super.onRestart();
     }
 
     @Override
-    protected void onStart()
-    {
+    protected void onStart() {
         super.onStart();
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
     }
 
     @Override
-    protected void onStop()
-    {
+    protected void onStop() {
         super.onStop();
-        MyApplication.getHttpQueues().cancelAll("myTag");
     }
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         super.onDestroy();
     }
 }

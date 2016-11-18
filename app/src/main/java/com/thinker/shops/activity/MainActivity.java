@@ -53,6 +53,8 @@ public class MainActivity extends Activity {
     {
         super.onStop();
         MyApplication.getHttpQueues().cancelAll("myTAG");
+
+
     }
 
     private void initEvent()
