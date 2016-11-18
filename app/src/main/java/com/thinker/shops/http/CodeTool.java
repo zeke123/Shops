@@ -4,12 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
-/**
- * 编解码工具
- * 
- * @author 廖金舟
- * 
- */
+
 public class CodeTool
 {
 	/**
