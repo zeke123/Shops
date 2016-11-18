@@ -27,8 +27,8 @@ import java.util.HashMap;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class MainActivity extends Activity {
-
+public class MainActivity extends Activity
+{
 
     public static final String TAG = "MainActivity";
     private String mStatus;
@@ -53,8 +53,6 @@ public class MainActivity extends Activity {
     {
         super.onStop();
         MyApplication.getHttpQueues().cancelAll("myTAG");
-
-
     }
 
     private void initEvent()
@@ -109,7 +107,6 @@ public class MainActivity extends Activity {
                     @Override
                     public void onMySuccess(String resault)
                     {
-                        //Toast.makeText(getApplicationContext(),resault.toString(), Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "resault============"+resault.toString());
                         Gson gson = new Gson();
                         JsonDatas  mDatas = gson.fromJson(resault.toString(), JsonDatas.class);
