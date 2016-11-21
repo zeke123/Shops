@@ -70,6 +70,7 @@ public class CodeTool
 		catch (UnsupportedEncodingException e)
 		{
 			e.printStackTrace();
+
 			return str;
 		}
 	}

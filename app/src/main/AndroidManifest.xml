@@ -30,6 +30,8 @@
         <activity android:name=".activity.ShopsDetailActivity"/>
 
         <activity android:name=".activity.KannerActivity"/>
+
+        <activity android:name=".activity.SingleImgActivity"/>
     </application>
 
 </manifest>

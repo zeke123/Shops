@@ -6,15 +6,15 @@ import java.io.Serializable;
  * Created by zhoujian on 2016/11/17.
  */
 
-public class DataItem implements Serializable{
+public class DataItem implements Serializable
+{
 
     private static final long serialVersionUID = 1L;
 
-
     private long objectId;
     private String productName;
-
     private String showimg;
+
 
     public String getProductName() {
         return productName;

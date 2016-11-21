@@ -1,9 +1,9 @@
 package com.thinker.shops.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -19,14 +20,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.thinker.shops.R;
 import com.thinker.shops.bean.DataItem;
+import com.thinker.shops.db.MyDbOpenHelper;
 import com.thinker.shops.http.HttpClient;
 import com.thinker.shops.utils.DensityUtils;
 import com.thinker.shops.view.MenuGridView;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -38,6 +44,9 @@ public class ShopsDetailActivity extends Activity
 {
     public static final String TAG = "ShopsDetailActivity";
     private ArrayList<String>  pictureList = new ArrayList<String>();
+    private Map<Integer,String>   map= new HashMap<Integer,String>();
+
+
     @InjectView(R.id.im_personal)
     ImageButton mImPersonal;
     @InjectView(R.id.im_start)
@@ -51,6 +60,10 @@ public class ShopsDetailActivity extends Activity
     private long objectId;
     private ArrayList<DataItem> mList;
     private String img_path;
+    private ProgressDialog progress;
+    private MyAdater adater;
+    private MyDbOpenHelper mHelper;
+    private SQLiteDatabase SQLdb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +71,11 @@ public class ShopsDetailActivity extends Activity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_shops_detail);
         ButterKnife.inject(this);
+
+        //创建数据库
+        mHelper = new MyDbOpenHelper(ShopsDetailActivity.this, "picturetable.db", null, 1);
+        SQLdb = mHelper.getWritableDatabase();
+
         //获取屏幕的的宽度
         mWidth = DensityUtils.getScreenWidth(ShopsDetailActivity.this);
         commuityOid = getIntent().getStringExtra("mId");
@@ -77,7 +95,38 @@ public class ShopsDetailActivity extends Activity
             }
         });
 
-        mImStart.setOnClickListener(new View.OnClickListener() {
+
+        mMGridViewImage.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            private String mStringPath;
+
+            @Override
+            public void onItemClick(AdapterView<?> view, View view1, int postion, long l) {
+
+
+
+                //取到的是本地的图片
+                mStringPath = map.get(postion);
+                Intent intent = new Intent(ShopsDetailActivity.this,SingleImgActivity.class);
+                intent.putExtra("mStringPath",mStringPath);
+                startActivity(intent);
+
+            }
+        });
+
+        mImFlush.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //刷新的按钮
+
+                //adater.notifyDataSetChanged();
+
+            }
+        });
+
+        mImStart.setOnClickListener(new View.OnClickListener()
+        {
         @Override
         public void onClick(View view) {
 
@@ -89,13 +138,16 @@ public class ShopsDetailActivity extends Activity
                 Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+
+
         }
     });
     }
 
     private void initData()
     {
-        MyAdater adater = new MyAdater();
+        adater = new MyAdater();
         mMGridViewImage.setAdapter(adater);
         mMGridViewImage.setSelector(R.color.transparent);
     }
@@ -155,6 +207,43 @@ public class ShopsDetailActivity extends Activity
 
                 holder.tv_product_name.setText(mList.get(position).getProductName());
 
+
+                //眼睛的点击事件
+                holder.im_not_watch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        holder.im_watch.setVisibility(View.VISIBLE);
+
+                        holder.im_not_watch.setVisibility(View.INVISIBLE);
+                    }
+                });
+
+
+                holder.im_watch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        holder.im_watch.setVisibility(View.INVISIBLE);
+
+                        holder.im_not_watch.setVisibility(View.VISIBLE);
+
+                    }
+                });
+                //删除的点击事件
+                holder.im_delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        holder.im_botoom.setVisibility(View.VISIBLE);
+                        holder.im_download.setVisibility(View.VISIBLE);
+                        holder.ll_bottom_right.setVisibility(View.GONE);
+                    }
+                });
+
+
+
+
+                //下载的点击事件
                 holder.im_download.setOnClickListener(new View.OnClickListener() {
 
                     @Override
@@ -164,7 +253,11 @@ public class ShopsDetailActivity extends Activity
                         String  pathUrl= "http://192.168.1.57:8080/task/mall/paddemo/postimg.do?objectId=" +objectId+"&communityOid="+commuityOid;
                         Log.e(TAG,"pathUrl=="+pathUrl);
                         pictureList.add(pathUrl);
+
+
                         //开启线程下载图片
+                        downLoadDialog();
+                        progress.show();
                         startDownLoaad(pathUrl);
                     }
                     private void startDownLoaad(final String imgUrl)
@@ -172,14 +265,17 @@ public class ShopsDetailActivity extends Activity
                         final  Handler hander = new Handler(){
                             @Override
                             public void handleMessage(Message msg) {
-                                Bitmap bm = BitmapFactory.decodeFile(img_path);
-                                Log.e(TAG,"bm==="+bm);
-                                Log.e(TAG,"img_path==="+img_path);
-                                holder.im_picture.setImageBitmap(bm);
-                                bm.recycle();
+
+
+                                progress.dismiss();
+                                map.put(position,img_path);
                                 holder.im_botoom.setVisibility(View.GONE);
                                 holder.ll_bottom_right.setVisibility(View.VISIBLE);
                                 holder.im_download.setVisibility(View.GONE);
+
+                                Toast.makeText(ShopsDetailActivity.this, "图片下载完成", Toast.LENGTH_SHORT).show();
+
+
                             }
                         };
                         Thread thread = new Thread()
@@ -217,6 +313,9 @@ public class ShopsDetailActivity extends Activity
                         thread.start();
                     }
                 });
+
+
+
             }
             return view;
         }
@@ -231,6 +330,13 @@ public class ShopsDetailActivity extends Activity
             LinearLayout ll_bottom_right;
             TextView tv_product_name;
         }
+    }
+
+    private void downLoadDialog() {
+
+        progress = new ProgressDialog(ShopsDetailActivity.this);
+
+        progress.setMessage("请等候，图片下载中...");
     }
 
     /**

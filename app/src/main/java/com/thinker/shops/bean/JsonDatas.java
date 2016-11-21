@@ -31,10 +31,8 @@ public class JsonDatas implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "JsonDatas{" +
-                "data=" + data +
-                ", status='" + status + '\'' +
-                '}';
+    public String toString()
+    {
+        return "JsonDatas{" + "data=" + data + ", status='" + status + '\'' + '}';
     }
 }
