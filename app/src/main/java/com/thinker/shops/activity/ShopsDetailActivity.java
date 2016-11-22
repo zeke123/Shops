@@ -94,8 +94,6 @@ public class ShopsDetailActivity extends Activity
         //服务器返回数据
         mList = (ArrayList<DataItem>) getIntent().getSerializableExtra("mList");
 
-       // SQLdb.execSQL("delete from picturetable;");
-        
         //把数据插入数据库
         insertDb();
 
@@ -103,7 +101,7 @@ public class ShopsDetailActivity extends Activity
         queryDb();
 
         //线上数据
-       // Log.e(TAG,"线上数据。。。。list=="+list.toString());
+        Log.e(TAG,"线上数据。。。。list=="+list.toString());
         Log.e(TAG,"数据库数据。。。dataList=="+dataList.toString());
         
         //初始化数据
@@ -237,21 +235,28 @@ public class ShopsDetailActivity extends Activity
 
             if(dataList!=null && dataList.size()>0){
 
+                pictureList.clear();
+
                 for (int i = 0; i < dataList.size(); i++){
+
 
                     if("1".equals(dataList.get(i).getIsWatch()) && ((!("null".equals(dataList.get(i).
                             getNewictureUrl()))) ||!TextUtils.isEmpty(dataList.get(i).getNewictureUrl()))){
 
-                        pictureList.clear();;
                         pictureList.add(dataList.get(i).getNewictureUrl());
-                        Intent intent = new Intent(ShopsDetailActivity.this,KannerActivity.class);
-                        intent.putStringArrayListExtra("pictureList",pictureList);
-                        startActivity(intent);
 
-                    }else{
-                        Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
-                        return;
                     }
+                }
+
+                if(pictureList!=null && pictureList.size()>0){
+
+                    Intent intent = new Intent(ShopsDetailActivity.this,KannerActivity.class);
+                    intent.putStringArrayListExtra("pictureList",pictureList);
+                    startActivity(intent);
+
+                }else{
+                    Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
+                    return;
                 }
             }
         }
@@ -322,9 +327,6 @@ public class ShopsDetailActivity extends Activity
                 //下载的图片是否为null
 
                 mUrl = dataList.get(position).getNewictureUrl();
-
-
-
                 if("null".equals(mUrl) || TextUtils.isEmpty(mUrl))
                 {
                     mShowimg = dataList.get(position).getShowimg();
@@ -335,7 +337,6 @@ public class ShopsDetailActivity extends Activity
                     holder.im_download.setVisibility(View.VISIBLE);
                     holder.im_botoom.setVisibility(View.VISIBLE);
                     holder.ll_bottom_right.setVisibility(View.INVISIBLE);
-
                 }
                 else
                 {
@@ -365,41 +366,29 @@ public class ShopsDetailActivity extends Activity
                     @Override
                     public void onClick(View view) {
 
-                        //0----->1
-
+                        //0---->1
                         holder.im_watch.setVisibility(View.VISIBLE);
-
                         holder.im_not_watch.setVisibility(View.INVISIBLE);
-
                         objectId = mList.get(position).getObjectId();
-
                         //跟新数据
                         ContentValues values = new ContentValues();
                         values.put("isWatch","1");
-
                         SQLdb.update("picturetable",values,"objectId=?",new String[]{Long.toString(objectId)});
 
                     }
                 });
 
-
                 holder.im_watch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
                         //  1--->0
                         holder.im_watch.setVisibility(View.INVISIBLE);
-
                         holder.im_not_watch.setVisibility(View.VISIBLE);
-
                         objectId = mList.get(position).getObjectId();
-
                         //跟新数据
                         ContentValues values = new ContentValues();
                         values.put("isWatch","0");
-
                         SQLdb.update("picturetable",values,"objectId=?",new String[]{Long.toString(objectId)});
-
                     }
                 });
                 //删除的点击事件
@@ -408,11 +397,8 @@ public class ShopsDetailActivity extends Activity
                     public void onClick(View view) {
 
                         isDelete = 1;
-
                         //把下载到本地的图片删除，删除一个字段
-
                         objectId = mList.get(position).getObjectId();
-
                         //跟新数据
                         ContentValues values = new ContentValues();
                         values.put("newictureUrl","null");
@@ -421,11 +407,8 @@ public class ShopsDetailActivity extends Activity
                         holder.im_botoom.setVisibility(View.VISIBLE);
                         holder.im_download.setVisibility(View.VISIBLE);
                         holder.ll_bottom_right.setVisibility(View.GONE);
-
                     }
                 });
-
-
                 //下载的点击事件
                 holder.im_download.setOnClickListener(new View.OnClickListener() {
 
@@ -433,8 +416,8 @@ public class ShopsDetailActivity extends Activity
                     public void onClick(View view) {
                         objectId = mList.get(position).getObjectId();
                       //  Log.e(TAG,"objectId=="+objectId);
-                        String  pathUrl= "http://192.168.1.57:8080/task/mall/paddemo/postimg.do?objectId=" +objectId+"&communityOid="+commuityOid;
-                      //  Log.e(TAG,"pathUrl=="+pathUrl);
+                        String  pathUrl= "http://198.168.1.57:8080/task/mall/paddemo/postimg.do?objectId=" +objectId+"&communityOid="+commuityOid;
+                        Log.e(TAG,"pathUrl=="+pathUrl);
 
                         //开启线程下载图片
                         downLoadDialog();
@@ -452,19 +435,13 @@ public class ShopsDetailActivity extends Activity
                                 //跟新数据
                                 ContentValues values = new ContentValues();
                                 values.put("newictureUrl",img_path);
-
                                 values.put("isWatch","1");
-
                                // SQLdb.update("picturetable",values,"objectId=?",new String[]{Long.toString(objectId)});
-
                                 SQLdb.update("picturetable",values,"objectId=?",new String[]{Long.toString(objectId)});
-
                                 holder.im_botoom.setVisibility(View.GONE);
                                 holder.ll_bottom_right.setVisibility(View.VISIBLE);
                                 holder.im_download.setVisibility(View.GONE);
                                 Toast.makeText(ShopsDetailActivity.this, "图片下载完成", Toast.LENGTH_SHORT).show();
-
-
                             }
                         };
                         Thread thread = new Thread()
@@ -503,13 +480,12 @@ public class ShopsDetailActivity extends Activity
                     }
                 });
 
-
-
             }
             return view;
         }
 
-        class ViewHolder {
+        class ViewHolder
+        {
             ImageView im_picture;
             ImageView im_botoom;
             ImageView im_download;
@@ -521,10 +497,9 @@ public class ShopsDetailActivity extends Activity
         }
     }
 
-    private void downLoadDialog() {
-
+    private void downLoadDialog()
+    {
         progress = new ProgressDialog(ShopsDetailActivity.this);
-
         progress.setMessage("请等候，图片下载中...");
     }
 
