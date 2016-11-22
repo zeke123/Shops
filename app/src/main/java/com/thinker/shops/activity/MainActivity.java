@@ -116,14 +116,13 @@ public class MainActivity extends Activity
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("domain", name);
         VolleyRequest.requestPost(getApplicationContext(),
-                "http://198.168.1.57:8080/task/mall/paddemo/selectCommunityByDomain.do", "myTAG", params, new VolleyInterface(
+                "http://192.168.1.57:8080/task/mall/paddemo/selectCommunityByDomain.do", "myTAG", params, new VolleyInterface(
                         MainActivity.this, VolleyInterface.mListener,
                         VolleyInterface.mErrorListener)
                 {
 
                     private String mData;
                     private String mStatus;
-
                     @Override
                     public void onMySuccess(String resault)
                     {
@@ -131,8 +130,8 @@ public class MainActivity extends Activity
                         JSONObject  jsonObject = JSONObject.parseObject(resault);
                         mStatus = jsonObject.getString("status");
                         Log.e(TAG, "mStatus============"+mStatus);
-
-                        if("OK".equals(mStatus)){
+                        if("OK".equals(mStatus))
+                        {
                             Gson gson = new Gson();
                             JsonDatas  mDatas = gson.fromJson(resault.toString(), JsonDatas.class);
                             MainActivity.this.mData = mDatas.getData();
@@ -140,12 +139,11 @@ public class MainActivity extends Activity
                             mList = MainActivity.this.mData.getProductList();
                             startShopsDetail();
 
-                        }else if("ERROR".equals(mStatus)){
-
+                        }
+                        else if("ERROR".equals(mStatus)){
                             mData = jsonObject.getString("data");
                             Toast.makeText(getApplicationContext(),mData, Toast.LENGTH_SHORT).show();
                             return;
-
                         }
                     }
 

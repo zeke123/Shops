@@ -44,12 +44,13 @@ import butterknife.InjectView;
  * Created by zhoujian on 2016/11/16.
  */
 
-public class ShopsDetailActivity extends Activity {
+public class ShopsDetailActivity extends Activity
+{
+
     public static final String TAG = "ShopsDetailActivity";
     @InjectView(R.id.im_back)
     ImageView mImBack;
     private Map<Integer, String> map = new HashMap<Integer, String>();
-
     //用于要播放的图片
     ArrayList<String> pictureList = new ArrayList<String>();
     @InjectView(R.id.im_personal)
@@ -85,37 +86,29 @@ public class ShopsDetailActivity extends Activity {
         //创建数据库
         mHelper = new MyDbOpenHelper(ShopsDetailActivity.this, "picturetable.db", null, 1);
         SQLdb = mHelper.getWritableDatabase();
-
-
         //获取屏幕的的宽度
         mWidth = DensityUtils.getScreenWidth(ShopsDetailActivity.this);
         commuityOid = getIntent().getStringExtra("mId");
-
         //服务器返回数据
         mList = (ArrayList<DataItem>) getIntent().getSerializableExtra("mList");
 
         //把数据插入数据库
         insertDb();
-
         //查询数据库,并把数据存入集合
         queryDb();
-
         //线上数据
         Log.e(TAG, "线上数据。。。。list==" + list.toString());
         Log.e(TAG, "数据库数据。。。dataList==" + dataList.toString());
-
         //初始化数据
         initData();
-
         //点击事件
         clickEvent();
     }
 
-    private void queryDb() {
-
+    private void queryDb()
+    {
         //存放本地数据库数据
         dataList = new ArrayList<DataItem>();
-
         Cursor c = SQLdb.query("picturetable", null, null, null, null, null, null, null);
 
         // 读取出数据库所有信息，并封装至对象，存至集合中
@@ -168,7 +161,6 @@ public class ShopsDetailActivity extends Activity {
                     SQLdb.endTransaction();
                 }
             }
-
         }
     }
 
@@ -191,20 +183,21 @@ public class ShopsDetailActivity extends Activity {
             }
         });
 
-        mMGridViewImage.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mMGridViewImage.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             private String mUrl;
 
             @Override
-            public void onItemClick(AdapterView<?> view, View view1, int postion, long l) {
-
+            public void onItemClick(AdapterView<?> view, View view1, int postion, long l)
+            {
                 queryDb();
                 mUrl = dataList.get(postion).getNewictureUrl();
-
-                if ("null".equals(mUrl)) {
-
+                if ("null".equals(mUrl))
+                {
                     Toast.makeText(ShopsDetailActivity.this, "图片还未下载", Toast.LENGTH_SHORT).show();
-
-                } else {
+                }
+                else
+                {
                     Intent intent = new Intent(ShopsDetailActivity.this, SingleImgActivity.class);
                     intent.putExtra("mStringPath", mUrl);
                     startActivity(intent);
@@ -337,19 +330,24 @@ public class ShopsDetailActivity extends Activity {
                     holder.ll_bottom_right.setVisibility(View.VISIBLE);
                     mWatch = dataList.get(position).getIsWatch();
 
-                    if ("0".equals(mWatch)) {
+                    if ("0".equals(mWatch))
+                    {
                         holder.im_watch.setVisibility(View.INVISIBLE);
                         holder.im_not_watch.setVisibility(View.VISIBLE);
-                    } else if ("1".equals(mWatch)) {
+                    }
+                    else if ("1".equals(mWatch))
+                    {
                         holder.im_watch.setVisibility(View.VISIBLE);
                         holder.im_not_watch.setVisibility(View.INVISIBLE);
                     }
                 }
 
                 //眼睛的点击事件
-                holder.im_not_watch.setOnClickListener(new View.OnClickListener() {
+                holder.im_not_watch.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(View view)
+                    {
 
                         //0---->1
                         holder.im_watch.setVisibility(View.VISIBLE);
@@ -359,7 +357,6 @@ public class ShopsDetailActivity extends Activity {
                         ContentValues values = new ContentValues();
                         values.put("isWatch", "1");
                         SQLdb.update("picturetable", values, "objectId=?", new String[]{Long.toString(objectId)});
-
                     }
                 });
 
@@ -377,11 +374,11 @@ public class ShopsDetailActivity extends Activity {
                     }
                 });
                 //删除的点击事件
-                holder.im_delete.setOnClickListener(new View.OnClickListener() {
+                holder.im_delete.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View view) {
-
-
+                    public void onClick(View view)
+                    {
                         //把下载到本地的图片删除，删除一个字段
                         objectId = mList.get(position).getObjectId();
                         //跟新数据
@@ -401,20 +398,22 @@ public class ShopsDetailActivity extends Activity {
                     public void onClick(View view) {
                         objectId = mList.get(position).getObjectId();
                         //  Log.e(TAG,"objectId=="+objectId);
-                        String pathUrl = "http://198.168.1.57:8080/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
+                        String pathUrl = "http://192.168.1.57:8080/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
                         Log.e(TAG, "pathUrl==" + pathUrl);
-
                         //开启线程下载图片
                         downLoadDialog();
                         progress.show();
                         startDownLoaad(pathUrl);
                     }
 
-                    private void startDownLoaad(final String imgUrl) {
-                        final Handler hander = new Handler() {
+                    private void startDownLoaad(final String imgUrl)
+                    {
+                        final Handler hander = new Handler()
+                        {
 
                             @Override
-                            public void handleMessage(Message msg) {
+                            public void handleMessage(Message msg)
+                            {
                                 progress.dismiss();
                                 map.put(position, img_path);
                                 //跟新数据
@@ -429,14 +428,18 @@ public class ShopsDetailActivity extends Activity {
                                 Toast.makeText(ShopsDetailActivity.this, "图片下载完成", Toast.LENGTH_SHORT).show();
                             }
                         };
-                        Thread thread = new Thread() {
-                            public void run() {
-                                try {
+                        Thread thread = new Thread()
+                        {
+                            public void run()
+                            {
+                                try
+                                {
                                     HttpClient httpClient = new HttpClient();
                                     byte[] byteData = httpClient.getData(imgUrl);
                                     // SD卡的路径
                                     String sdCardPath = getSDCardPath();
-                                    if (sdCardIsExit()) {
+                                    if (sdCardIsExit())
+                                    {
                                         // 图片的保存路
                                         img_path = sdCardPath + System.currentTimeMillis() + ".jpg";
                                         FileOutputStream fos = new FileOutputStream(img_path, false);
