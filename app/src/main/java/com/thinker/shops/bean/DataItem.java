@@ -9,19 +9,41 @@ import java.io.Serializable;
 public class DataItem implements Serializable
 {
 
-    private static final long serialVersionUID = 1L;
 
+
+    private static final long serialVersionUID = 1L;
     private long objectId;
     private String productName;
     private String showimg;
+    private int productId;
+    private String newictureUrl;
+    private String isWatch;
 
 
-    public String getProductName() {
-        return productName;
+
+    public String getShowimg() {
+        return showimg;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setShowimg(String showimg) {
+        this.showimg = showimg;
+    }
+
+    public String getIsWatch() {
+
+        return isWatch;
+    }
+
+    public void setIsWatch(String isWatch) {
+        this.isWatch = isWatch;
+    }
+
+    public String getNewictureUrl() {
+        return newictureUrl;
+    }
+
+    public void setNewictureUrl(String newictureUrl) {
+        this.newictureUrl = newictureUrl;
     }
 
     public long getObjectId() {
@@ -32,20 +54,31 @@ public class DataItem implements Serializable
         this.objectId = objectId;
     }
 
-    public String getShowimg() {
-        return showimg;
+    public int getProductId() {
+        return productId;
     }
 
-    public void setShowimg(String showimg) {
-        this.showimg = showimg;
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     @Override
     public String toString() {
         return "DataItem{" +
-                "objectId=" + objectId +
+                "isWatch='" + isWatch + '\'' +
+                ", objectId=" + objectId +
                 ", productName='" + productName + '\'' +
                 ", showimg='" + showimg + '\'' +
+                ", productId=" + productId +
+                ", newictureUrl='" + newictureUrl + '\'' +
                 '}';
     }
 }

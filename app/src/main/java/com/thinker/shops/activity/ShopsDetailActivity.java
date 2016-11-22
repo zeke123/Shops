@@ -2,12 +2,15 @@ package com.thinker.shops.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,7 @@ import com.thinker.shops.db.MyDbOpenHelper;
 import com.thinker.shops.http.HttpClient;
 import com.thinker.shops.utils.DensityUtils;
 import com.thinker.shops.view.MenuGridView;
+
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,10 +47,10 @@ import butterknife.InjectView;
 public class ShopsDetailActivity extends Activity
 {
     public static final String TAG = "ShopsDetailActivity";
-    private ArrayList<String>  pictureList = new ArrayList<String>();
     private Map<Integer,String>   map= new HashMap<Integer,String>();
 
-
+    //用于要播放的图片
+    ArrayList<String> pictureList = new ArrayList<String>();
     @InjectView(R.id.im_personal)
     ImageButton mImPersonal;
     @InjectView(R.id.im_start)
@@ -59,11 +63,17 @@ public class ShopsDetailActivity extends Activity
     private String commuityOid;
     private long objectId;
     private ArrayList<DataItem> mList;
+    //线上
+    ArrayList<DataItem> list;
+    //本地数据
+    ArrayList<DataItem> dataList;
     private String img_path;
     private ProgressDialog progress;
     private MyAdater adater;
     private MyDbOpenHelper mHelper;
     private SQLiteDatabase SQLdb;
+
+    private int isDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +86,98 @@ public class ShopsDetailActivity extends Activity
         mHelper = new MyDbOpenHelper(ShopsDetailActivity.this, "picturetable.db", null, 1);
         SQLdb = mHelper.getWritableDatabase();
 
+
         //获取屏幕的的宽度
         mWidth = DensityUtils.getScreenWidth(ShopsDetailActivity.this);
         commuityOid = getIntent().getStringExtra("mId");
+
+        //服务器返回数据
         mList = (ArrayList<DataItem>) getIntent().getSerializableExtra("mList");
+
+       // SQLdb.execSQL("delete from picturetable;");
+        
+        //把数据插入数据库
+        insertDb();
+
+        //查询数据库,并把数据存入集合
+        queryDb();
+
+        //线上数据
+       // Log.e(TAG,"线上数据。。。。list=="+list.toString());
+        Log.e(TAG,"数据库数据。。。dataList=="+dataList.toString());
+        
+        //初始化数据
         initData();
+        
+        //点击事件
         clickEvent();
+    }
+
+    private void queryDb()
+    {
+
+        //存放本地数据库数据
+        dataList = new ArrayList<DataItem>();
+
+        Cursor c = SQLdb.query("picturetable", null, null, null, null, null,null, null);
+
+        // 读取出数据库所有信息，并封装至对象，存至集合中
+        while (c.moveToNext())
+        {
+            int  productId = c.getInt(c.getColumnIndex("productId"));
+            String productName = c.getString(c.getColumnIndex("productName"));
+            String objectId = c.getString(c.getColumnIndex("objectId"));
+            String showimg = c.getString(c.getColumnIndex("showimg"));
+            String newictureUrl = c.getString(c.getColumnIndex("newictureUrl"));
+            String isWatch = c.getString(c.getColumnIndex("isWatch"));
+            DataItem item = new DataItem();
+            item.setProductId(productId);
+            item.setProductName(productName);
+            item.setObjectId(Long.parseLong(objectId));
+            item.setShowimg(showimg);
+            item.setNewictureUrl(newictureUrl);
+            item.setIsWatch(isWatch);
+            dataList.add(item);
+        }
+    }
+
+
+    private void insertDb(){
+
+        if(mList!=null && mList.size()>0)
+        {
+
+            list = new ArrayList<DataItem>();
+            for (int i = 0; i < mList.size(); i++)
+            {
+                Long objectId = mList.get(i).getObjectId();
+                int count = 0;
+                Cursor cursor =  SQLdb.rawQuery("select count(*) from picturetable where objectid="+ Long.toString(objectId),null);
+                while(cursor.moveToNext())
+                {
+                    count = cursor.getInt(0);
+                }
+                if(count == 0)
+                {
+                    DataItem item = new DataItem();
+                    item.setProductId(i);
+                    item.setProductName(mList.get(i).getProductName());
+                    item.setObjectId(mList.get(i).getObjectId());
+                    item.setShowimg(mList.get(i).getShowimg());
+                    item.setNewictureUrl(mList.get(i).getNewictureUrl());
+                    item.setIsWatch(mList.get(i).getIsWatch());
+                    list.add(item);
+                    SQLdb.beginTransaction();// 开始事务
+                    SQLdb.execSQL("insert into picturetable(productId, productName, objectId,showimg,newictureUrl,isWatch)values(?, ?, ?,?, ?, ?);",
+                            new Object[] {i, list.get(i).getProductName(), list.get(i).getObjectId() ,
+                                    list.get(i).getShowimg(),list.get(i).getNewictureUrl(),list.get(i).getIsWatch()
+                            });
+                    SQLdb.setTransactionSuccessful();
+                    SQLdb.endTransaction();
+                }
+            }
+
+        }
     }
 
     private void clickEvent()
@@ -97,20 +193,22 @@ public class ShopsDetailActivity extends Activity
 
 
         mMGridViewImage.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            private String mStringPath;
-
+            private String mUrl;
             @Override
             public void onItemClick(AdapterView<?> view, View view1, int postion, long l) {
 
+                queryDb();
+                mUrl = dataList.get(postion).getNewictureUrl();
 
+                if("null".equals(mUrl)){
 
-                //取到的是本地的图片
-                mStringPath = map.get(postion);
-                Intent intent = new Intent(ShopsDetailActivity.this,SingleImgActivity.class);
-                intent.putExtra("mStringPath",mStringPath);
-                startActivity(intent);
+                    Toast.makeText(ShopsDetailActivity.this, "图片还未下载", Toast.LENGTH_SHORT).show();
 
+                }else{
+                    Intent intent = new Intent(ShopsDetailActivity.this,SingleImgActivity.class);
+                    intent.putExtra("mStringPath",mUrl);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -119,9 +217,13 @@ public class ShopsDetailActivity extends Activity
             public void onClick(View view) {
 
                 //刷新的按钮
+                queryDb();
+                //初始化数据
+                initData();
 
-                //adater.notifyDataSetChanged();
+                adater.notifyDataSetChanged();
 
+                Toast.makeText(ShopsDetailActivity.this, "已经是最新数据", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -130,17 +232,28 @@ public class ShopsDetailActivity extends Activity
         @Override
         public void onClick(View view) {
 
-            if(pictureList!=null && pictureList.size()>0){
-                Intent intent = new Intent(ShopsDetailActivity.this,KannerActivity.class);
-                intent.putStringArrayListExtra("pictureList",pictureList);
-                startActivity(intent);
-            }else{
-                Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
-                return;
+
+            queryDb();
+
+            if(dataList!=null && dataList.size()>0){
+
+                for (int i = 0; i < dataList.size(); i++){
+
+                    if("1".equals(dataList.get(i).getIsWatch()) && ((!("null".equals(dataList.get(i).
+                            getNewictureUrl()))) ||!TextUtils.isEmpty(dataList.get(i).getNewictureUrl()))){
+
+                        pictureList.clear();;
+                        pictureList.add(dataList.get(i).getNewictureUrl());
+                        Intent intent = new Intent(ShopsDetailActivity.this,KannerActivity.class);
+                        intent.putStringArrayListExtra("pictureList",pictureList);
+                        startActivity(intent);
+
+                    }else{
+                        Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
             }
-
-
-
         }
     });
     }
@@ -155,11 +268,16 @@ public class ShopsDetailActivity extends Activity
     class MyAdater extends BaseAdapter
     {
         private String mShowimg;
+        private String mUrl;
+        private String mWatch;
 
         public int getCount() {
-            if (mList != null && mList.size() > 0) {
-                return mList.size();
+            if (dataList != null && dataList.size() > 0) {
+                return dataList.size();
+
             }
+
+            Log.e(TAG,"dataList===="+dataList.toString());
             return 0;
         }
 
@@ -199,23 +317,68 @@ public class ShopsDetailActivity extends Activity
                 param.height = pictureWidth;
                 view.setTag(holder);
             }
-            if (mList != null && mList.size() > 0) {
-                mShowimg = mList.get(position).getShowimg();
-                String newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
+            if (dataList != null && dataList.size() > 0) {
 
-                Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
+                //下载的图片是否为null
 
-                holder.tv_product_name.setText(mList.get(position).getProductName());
+                mUrl = dataList.get(position).getNewictureUrl();
 
+
+
+                if("null".equals(mUrl) || TextUtils.isEmpty(mUrl))
+                {
+                    mShowimg = dataList.get(position).getShowimg();
+                    String newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
+                    Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
+                    holder.tv_product_name.setText(dataList.get(position).getProductName());
+                    //下载的按钮可见，浮层可见
+                    holder.im_download.setVisibility(View.VISIBLE);
+                    holder.im_botoom.setVisibility(View.VISIBLE);
+                    holder.ll_bottom_right.setVisibility(View.INVISIBLE);
+
+                }
+                else
+                {
+                    mShowimg = dataList.get(position).getShowimg();
+                    String newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
+                    Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
+                    holder.tv_product_name.setText(dataList.get(position).getProductName());
+                    holder.im_download.setVisibility(View.INVISIBLE);
+                    holder.im_botoom.setVisibility(View.INVISIBLE);
+                    holder.ll_bottom_right.setVisibility(View.VISIBLE);
+                    mWatch = dataList.get(position).getIsWatch();
+
+                    if("0".equals(mWatch))
+                    {
+                        holder.im_watch.setVisibility(View.INVISIBLE);
+                        holder.im_not_watch.setVisibility(View.VISIBLE);
+                    }
+                    else if("1".equals(mWatch))
+                    {
+                        holder.im_watch.setVisibility(View.VISIBLE);
+                        holder.im_not_watch.setVisibility(View.INVISIBLE);
+                    }
+                }
 
                 //眼睛的点击事件
                 holder.im_not_watch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
+                        //0----->1
+
                         holder.im_watch.setVisibility(View.VISIBLE);
 
                         holder.im_not_watch.setVisibility(View.INVISIBLE);
+
+                        objectId = mList.get(position).getObjectId();
+
+                        //跟新数据
+                        ContentValues values = new ContentValues();
+                        values.put("isWatch","1");
+
+                        SQLdb.update("picturetable",values,"objectId=?",new String[]{Long.toString(objectId)});
+
                     }
                 });
 
@@ -223,9 +386,19 @@ public class ShopsDetailActivity extends Activity
                 holder.im_watch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+                        //  1--->0
                         holder.im_watch.setVisibility(View.INVISIBLE);
 
                         holder.im_not_watch.setVisibility(View.VISIBLE);
+
+                        objectId = mList.get(position).getObjectId();
+
+                        //跟新数据
+                        ContentValues values = new ContentValues();
+                        values.put("isWatch","0");
+
+                        SQLdb.update("picturetable",values,"objectId=?",new String[]{Long.toString(objectId)});
 
                     }
                 });
@@ -234,13 +407,23 @@ public class ShopsDetailActivity extends Activity
                     @Override
                     public void onClick(View view) {
 
+                        isDelete = 1;
+
+                        //把下载到本地的图片删除，删除一个字段
+
+                        objectId = mList.get(position).getObjectId();
+
+                        //跟新数据
+                        ContentValues values = new ContentValues();
+                        values.put("newictureUrl","null");
+                        values.put("isWatch","0");
+                        SQLdb.update("picturetable",values,"objectId=?",new String[]{Long.toString(objectId)});
                         holder.im_botoom.setVisibility(View.VISIBLE);
                         holder.im_download.setVisibility(View.VISIBLE);
                         holder.ll_bottom_right.setVisibility(View.GONE);
+
                     }
                 });
-
-
 
 
                 //下载的点击事件
@@ -249,11 +432,9 @@ public class ShopsDetailActivity extends Activity
                     @Override
                     public void onClick(View view) {
                         objectId = mList.get(position).getObjectId();
-                        Log.e(TAG,"objectId=="+objectId);
+                      //  Log.e(TAG,"objectId=="+objectId);
                         String  pathUrl= "http://192.168.1.57:8080/task/mall/paddemo/postimg.do?objectId=" +objectId+"&communityOid="+commuityOid;
-                        Log.e(TAG,"pathUrl=="+pathUrl);
-                        pictureList.add(pathUrl);
-
+                      //  Log.e(TAG,"pathUrl=="+pathUrl);
 
                         //开启线程下载图片
                         downLoadDialog();
@@ -263,16 +444,24 @@ public class ShopsDetailActivity extends Activity
                     private void startDownLoaad(final String imgUrl)
                     {
                         final  Handler hander = new Handler(){
+
                             @Override
                             public void handleMessage(Message msg) {
-
-
                                 progress.dismiss();
                                 map.put(position,img_path);
+                                //跟新数据
+                                ContentValues values = new ContentValues();
+                                values.put("newictureUrl",img_path);
+
+                                values.put("isWatch","1");
+
+                               // SQLdb.update("picturetable",values,"objectId=?",new String[]{Long.toString(objectId)});
+
+                                SQLdb.update("picturetable",values,"objectId=?",new String[]{Long.toString(objectId)});
+
                                 holder.im_botoom.setVisibility(View.GONE);
                                 holder.ll_bottom_right.setVisibility(View.VISIBLE);
                                 holder.im_download.setVisibility(View.GONE);
-
                                 Toast.makeText(ShopsDetailActivity.this, "图片下载完成", Toast.LENGTH_SHORT).show();
 
 

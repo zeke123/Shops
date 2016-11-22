@@ -8,8 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by zhoujian on 2016/11/17.
  */
 
-public class MyDbOpenHelper extends SQLiteOpenHelper {
-    public MyDbOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+public class MyDbOpenHelper extends SQLiteOpenHelper
+{
+    public MyDbOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
+    {
         super(context, name, factory, version);
     }
 
@@ -34,7 +36,15 @@ public class MyDbOpenHelper extends SQLiteOpenHelper {
         private String isDelele;
 
         //是否可见
-        private String isWatch;*/
+        private String isWatch;
+
+
+    private long objectId;
+    private String productName;
+    private String showimg;
+
+
+        */
 
 
         //String sql = "create table user(id int,name varchar(20))";
@@ -42,15 +52,15 @@ public class MyDbOpenHelper extends SQLiteOpenHelper {
 
         db.execSQL("create table picturetable(productId int," +
                 " productName varchar(20)," +
-                " oldictureUrl varchar(20)," +
+                " objectId varchar(20)," +
+                " showimg varchar(20)," +
                 " newictureUrl varchar(20)," +
-                "isDelele varchar(20)," +
                 "isWatch varchar(20));");
-
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase database, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase database, int i, int i1)
+    {
 
     }
 }
