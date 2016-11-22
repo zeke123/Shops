@@ -9,7 +9,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="50dp"
+        android:background="#2c9a2d">
 
 
         <ImageView
@@ -19,13 +20,13 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
-            android:background="@mipmap/back"/>
+            android:background="@mipmap/itemback"/>
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:background="#2c9a2d"
-            android:gravity="center_horizontal|center_vertical"
             android:text="来米汇"
             android:textColor="#ffffff"
             android:textSize="20sp"/>

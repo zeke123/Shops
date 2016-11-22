@@ -39,6 +39,8 @@ public class SingleImgActivity extends Activity {
     ImageButton mImShare;
     @InjectView(R.id.im_takecare)
     ImageButton mImTakecare;
+    @InjectView(R.id.im_back)
+    ImageView mImBack;
     private String mPath;
 
     private Bitmap bm;
@@ -60,18 +62,15 @@ public class SingleImgActivity extends Activity {
         clickEvent();
 
 
-
     }
 
-    private void clickEvent()
-    {
+    private void clickEvent() {
 
         //保存到相册中
 
         mImTakecare.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
 
                 saveImageToGallery(SingleImgActivity.this, bm);
             }
@@ -88,11 +87,17 @@ public class SingleImgActivity extends Activity {
             }
         });
 
+        mImBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
 
     }
 
-    private void showShare()
-    {
+    private void showShare() {
 
         ShareSDK.initSDK(this);
         OnekeyShare oks = new OnekeyShare();
@@ -121,8 +126,7 @@ public class SingleImgActivity extends Activity {
     }
 
 
-    public static void saveImageToGallery(Context context, Bitmap bmp)
-    {
+    public static void saveImageToGallery(Context context, Bitmap bmp) {
         // 首先保存图片
         File appDir = new File(Environment.getExternalStorageDirectory(), "Pictures");
         if (!appDir.exists()) {
@@ -155,8 +159,6 @@ public class SingleImgActivity extends Activity {
         context.sendBroadcast(intent);
         Toast.makeText(context, "图片保存保存到相册中", Toast.LENGTH_SHORT).show();
     }
-
-
 
 
 }
