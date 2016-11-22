@@ -110,9 +110,9 @@ public class ShopsDetailActivity extends Activity
         //存放本地数据库数据
         dataList = new ArrayList<DataItem>();
         Cursor c = SQLdb.query("picturetable", null, null, null, null, null, null, null);
-
         // 读取出数据库所有信息，并封装至对象，存至集合中
-        while (c.moveToNext()) {
+        while (c.moveToNext())
+        {
             int productId = c.getInt(c.getColumnIndex("productId"));
             String productName = c.getString(c.getColumnIndex("productName"));
             String objectId = c.getString(c.getColumnIndex("objectId"));
@@ -131,19 +131,22 @@ public class ShopsDetailActivity extends Activity
     }
 
 
-    private void insertDb() {
-
-        if (mList != null && mList.size() > 0) {
-
+    private void insertDb()
+    {
+        if (mList != null && mList.size() > 0)
+        {
             list = new ArrayList<DataItem>();
-            for (int i = 0; i < mList.size(); i++) {
+            for (int i = 0; i < mList.size(); i++)
+            {
                 Long objectId = mList.get(i).getObjectId();
                 int count = 0;
                 Cursor cursor = SQLdb.rawQuery("select count(*) from picturetable where objectid=" + Long.toString(objectId), null);
-                while (cursor.moveToNext()) {
+                while (cursor.moveToNext())
+                {
                     count = cursor.getInt(0);
                 }
-                if (count == 0) {
+                if (count == 0)
+                {
                     DataItem item = new DataItem();
                     item.setProductId(i);
                     item.setProductName(mList.get(i).getProductName());
@@ -166,27 +169,28 @@ public class ShopsDetailActivity extends Activity
 
     private void clickEvent()
     {
-
-        mImBack.setOnClickListener(new View.OnClickListener() {
+        mImBack.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 finish();
             }
         });
 
-        mImPersonal.setOnClickListener(new View.OnClickListener() {
+        mImPersonal.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 Intent intent = new Intent(ShopsDetailActivity.this, MainActivity.class);
                 startActivity(intent);
-
             }
         });
 
         mMGridViewImage.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             private String mUrl;
-
             @Override
             public void onItemClick(AdapterView<?> view, View view1, int postion, long l)
             {
@@ -205,9 +209,11 @@ public class ShopsDetailActivity extends Activity
             }
         });
 
-        mImFlush.setOnClickListener(new View.OnClickListener() {
+        mImFlush.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 //刷新的按钮
                 queryDb();
                 //初始化数据
@@ -217,15 +223,15 @@ public class ShopsDetailActivity extends Activity
             }
         });
 
-        mImStart.setOnClickListener(new View.OnClickListener() {
+        mImStart.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-
+            public void onClick(View view)
+            {
                 queryDb();
-                if (dataList != null && dataList.size() > 0) {
-
+                if (dataList != null && dataList.size() > 0)
+                {
                     pictureList.clear();
-
                     for (int i = 0; i < dataList.size(); i++)
                     {
                         if ("1".equals(dataList.get(i).getIsWatch()) && ((!("null".equals(dataList.get(i).
@@ -233,13 +239,14 @@ public class ShopsDetailActivity extends Activity
                             pictureList.add(dataList.get(i).getNewictureUrl());
                         }
                     }
-
                     if (pictureList != null && pictureList.size() > 0) {
                         Intent intent = new Intent(ShopsDetailActivity.this, KannerActivity.class);
                         intent.putStringArrayListExtra("pictureList", pictureList);
                         startActivity(intent);
 
-                    } else {
+                    }
+                    else
+                    {
                         Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -261,21 +268,22 @@ public class ShopsDetailActivity extends Activity
         private String mUrl;
         private String mWatch;
 
-        public int getCount() {
+        public int getCount()
+        {
             if (dataList != null && dataList.size() > 0) {
                 return dataList.size();
 
             }
-
-            Log.e(TAG, "dataList====" + dataList.toString());
             return 0;
         }
 
-        public Object getItem(int position) {
+        public Object getItem(int position)
+        {
             return null;
         }
 
-        public long getItemId(int position) {
+        public long getItemId(int position)
+        {
             return 0;
         }
 
@@ -466,7 +474,8 @@ public class ShopsDetailActivity extends Activity
             return view;
         }
 
-        class ViewHolder {
+        class ViewHolder
+        {
             ImageView im_picture;
             ImageView im_botoom;
             ImageView im_download;
@@ -478,7 +487,8 @@ public class ShopsDetailActivity extends Activity
         }
     }
 
-    private void downLoadDialog() {
+    private void downLoadDialog()
+    {
         progress = new ProgressDialog(ShopsDetailActivity.this);
         progress.setMessage("请等候，图片下载中...");
     }
@@ -486,14 +496,16 @@ public class ShopsDetailActivity extends Activity
     /**
      * 判断SD卡是否可用
      */
-    private static boolean sdCardIsExit() {
+    private static boolean sdCardIsExit()
+    {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 
     /**
      * 获取SD卡路径
      */
-    public static String getSDCardPath() {
+    public static String getSDCardPath()
+    {
         if (sdCardIsExit()) {
             return Environment.getExternalStorageDirectory().toString() + "/";
         }
