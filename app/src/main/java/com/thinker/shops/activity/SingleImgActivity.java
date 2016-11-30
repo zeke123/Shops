@@ -14,14 +14,11 @@ import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.thinker.shops.R;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cn.sharesdk.framework.ShareSDK;
@@ -49,7 +46,6 @@ public class SingleImgActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_single);
-
         ShareSDK.initSDK(this);
         ButterKnife.inject(this);
         mPath = getIntent().getStringExtra("mStringPath");
@@ -76,7 +72,6 @@ public class SingleImgActivity extends Activity {
         mImShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 showShare();
             }
         });
@@ -87,17 +82,14 @@ public class SingleImgActivity extends Activity {
                 finish();
             }
         });
-
-
     }
 
-    private void showShare() {
-
+    private void showShare()
+    {
         ShareSDK.initSDK(this);
         OnekeyShare oks = new OnekeyShare();
         //关闭sso授权
         oks.disableSSOWhenAuthorize();
-
         // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间等使用
         oks.setTitle("标题");
         // titleUrl是标题的网络链接，QQ和QQ空间等使用
@@ -114,13 +106,12 @@ public class SingleImgActivity extends Activity {
         oks.setSite(getString(R.string.app_name));
         // siteUrl是分享此内容的网站地址，仅在QQ空间使用
         oks.setSiteUrl("http://sharesdk.cn");
-
         // 启动分享GUI
         oks.show(this);
     }
 
-
-    public static void saveImageToGallery(Context context, Bitmap bmp) {
+    public static void saveImageToGallery(Context context, Bitmap bmp)
+    {
         // 首先保存图片
         File appDir = new File(Environment.getExternalStorageDirectory(), "Pictures");
         if (!appDir.exists()) {
@@ -138,7 +129,6 @@ public class SingleImgActivity extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         // 其次把文件插入到系统图库
         try {
             MediaStore.Images.Media.insertImage(context.getContentResolver(),
@@ -153,6 +143,4 @@ public class SingleImgActivity extends Activity {
         context.sendBroadcast(intent);
         Toast.makeText(context, "图片保存保存到相册中", Toast.LENGTH_SHORT).show();
     }
-
-
 }
