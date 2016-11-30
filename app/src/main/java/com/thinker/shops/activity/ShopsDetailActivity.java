@@ -199,7 +199,7 @@ public class ShopsDetailActivity extends Activity
                 queryDb();
                 mUrl = dataList.get(postion).getNewictureUrl();
 
-                if("null".equals(mUrl)){
+                if("null".equals(mUrl) || TextUtils.isEmpty(mUrl)){
 
                     Toast.makeText(ShopsDetailActivity.this, "图片还未下载", Toast.LENGTH_SHORT).show();
 
@@ -211,17 +211,16 @@ public class ShopsDetailActivity extends Activity
             }
         });
 
-        mImFlush.setOnClickListener(new View.OnClickListener() {
+        mImFlush.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-
+            public void onClick(View view)
+            {
                 //刷新的按钮
                 queryDb();
                 //初始化数据
                 initData();
-
                 adater.notifyDataSetChanged();
-
                 Toast.makeText(ShopsDetailActivity.this, "已经是最新数据", Toast.LENGTH_SHORT).show();
             }
         });
@@ -269,6 +268,8 @@ public class ShopsDetailActivity extends Activity
         adater = new MyAdater();
         mMGridViewImage.setAdapter(adater);
         mMGridViewImage.setSelector(R.color.transparent);
+
+        adater.notifyDataSetChanged();
     }
 
     class MyAdater extends BaseAdapter
@@ -278,9 +279,9 @@ public class ShopsDetailActivity extends Activity
         private String mWatch;
 
         public int getCount() {
-            if (dataList != null && dataList.size() > 0) {
+            if (dataList != null && dataList.size() > 0)
+            {
                 return dataList.size();
-
             }
 
             Log.e(TAG,"dataList===="+dataList.toString());
@@ -328,12 +329,16 @@ public class ShopsDetailActivity extends Activity
                 //下载的图片是否为null
 
                 mUrl = dataList.get(position).getNewictureUrl();
+
+                mShowimg = dataList.get(position).getShowimg();
+                String newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
+                Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
+
+               holder.tv_product_name.setText(dataList.get(position).getProductName());
+               //holder.tv_product_name.setText("正宗福建平和琯溪红肉蜜柚红心柚子新鲜农家特产纯天然有机水果10斤装 3-4个");
                 if("null".equals(mUrl) || TextUtils.isEmpty(mUrl))
                 {
-                    mShowimg = dataList.get(position).getShowimg();
-                    String newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
-                    Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
-                    holder.tv_product_name.setText(dataList.get(position).getProductName());
+
                     //下载的按钮可见，浮层可见
                     holder.im_download.setVisibility(View.VISIBLE);
                     holder.im_botoom.setVisibility(View.VISIBLE);
@@ -341,10 +346,7 @@ public class ShopsDetailActivity extends Activity
                 }
                 else
                 {
-                    mShowimg = dataList.get(position).getShowimg();
-                    String newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
-                    Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
-                    holder.tv_product_name.setText(dataList.get(position).getProductName());
+
                     holder.im_download.setVisibility(View.INVISIBLE);
                     holder.im_botoom.setVisibility(View.INVISIBLE);
                     holder.ll_bottom_right.setVisibility(View.VISIBLE);
