@@ -42,7 +42,6 @@ public class SingleImgActivity extends Activity {
     @InjectView(R.id.im_back)
     ImageView mImBack;
     private String mPath;
-
     private Bitmap bm;
 
     @Override
@@ -58,10 +57,7 @@ public class SingleImgActivity extends Activity {
         options.inSampleSize = 1;
         bm = BitmapFactory.decodeFile(mPath, options);
         mImgBottom.setImageBitmap(bm);
-
         clickEvent();
-
-
     }
 
     private void clickEvent() {
@@ -81,9 +77,7 @@ public class SingleImgActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-
                 showShare();
-
             }
         });
 

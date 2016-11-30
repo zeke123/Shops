@@ -1,7 +1,6 @@
 package com.thinker.shops.volley;
 
 import android.content.Context;
-
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
@@ -29,11 +28,9 @@ public abstract class VolleyInterface {
 		mListener = new Listener<String>() {
 
 			@Override
-			public void onResponse(String response) {
-				
+			public void onResponse(String response)
+			{
 				onMySuccess(response);
-				
-				
 			}
 		};
 
