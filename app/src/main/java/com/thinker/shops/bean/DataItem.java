@@ -14,23 +14,13 @@ public class DataItem implements Serializable
     private static final long serialVersionUID = 1L;
     private long objectId;
     private String productName;
-    private String showimg;
+    private String padshowimg;
     private int productId;
     private String newictureUrl;
     private String isWatch;
 
 
-
-    public String getShowimg() {
-        return showimg;
-    }
-
-    public void setShowimg(String showimg) {
-        this.showimg = showimg;
-    }
-
     public String getIsWatch() {
-
         return isWatch;
     }
 
@@ -54,6 +44,14 @@ public class DataItem implements Serializable
         this.objectId = objectId;
     }
 
+    public String getPadshowimg() {
+        return padshowimg;
+    }
+
+    public void setPadshowimg(String padshowimg) {
+        this.padshowimg = padshowimg;
+    }
+
     public int getProductId() {
         return productId;
     }
@@ -70,13 +68,18 @@ public class DataItem implements Serializable
         this.productName = productName;
     }
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+
     @Override
     public String toString() {
         return "DataItem{" +
                 "isWatch='" + isWatch + '\'' +
                 ", objectId=" + objectId +
                 ", productName='" + productName + '\'' +
-                ", showimg='" + showimg + '\'' +
+                ", padshowimg='" + padshowimg + '\'' +
                 ", productId=" + productId +
                 ", newictureUrl='" + newictureUrl + '\'' +
                 '}';

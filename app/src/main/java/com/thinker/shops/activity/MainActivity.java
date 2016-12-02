@@ -113,10 +113,12 @@ public class MainActivity extends Activity
 
     private void initDatas(String name)
     {
+
+        //"http://dev.wecity.co/task/mall/paddemo/selectCommunityByDomain.do"
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("domain", name);
         VolleyRequest.requestPost(getApplicationContext(),
-                "http://192.168.1.57:8080/task/mall/paddemo/selectCommunityByDomain.do", "myTAG", params, new VolleyInterface(
+                "http://dev.wecity.co/task/mall/paddemo/selectCommunityByDomain.do", "myTAG", params, new VolleyInterface(
                         MainActivity.this, VolleyInterface.mListener,
                         VolleyInterface.mErrorListener)
                 {
