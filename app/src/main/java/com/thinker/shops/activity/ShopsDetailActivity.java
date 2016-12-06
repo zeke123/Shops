@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.thinker.shops.R;
 import com.thinker.shops.bean.DataItem;
@@ -32,12 +31,10 @@ import com.thinker.shops.db.MyDbOpenHelper;
 import com.thinker.shops.http.HttpClient;
 import com.thinker.shops.utils.DensityUtils;
 import com.thinker.shops.utils.SharedPreferencesUtils;
-
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -47,14 +44,12 @@ import butterknife.InjectView;
  */
 
 public class ShopsDetailActivity extends Activity {
+
     public static final String TAG = "ShopsDetailActivity";
     @InjectView(R.id.im_back)
     ImageView mImBack;
     private Map<Integer, String> map = new HashMap<Integer, String>();
-
     private String pathUrl;
-
-
     //用于要播放的图片
     ArrayList<String> pictureList = new ArrayList<String>();
     @InjectView(R.id.im_personal)
@@ -110,9 +105,7 @@ public class ShopsDetailActivity extends Activity {
 
         //存放本地数据库数据
         dataList = new ArrayList<DataItem>();
-
         Cursor c = SQLdb.query("picturetable", null, null, null, null, null, null, null);
-
         // 读取出数据库所有信息，并封装至对象，存至集合中
         while (c.moveToNext()) {
             int productId = c.getInt(c.getColumnIndex("productId"));
@@ -195,8 +188,6 @@ public class ShopsDetailActivity extends Activity {
                 } else {
                     Intent intent = new Intent(ShopsDetailActivity.this, SingleImgActivity.class);
                     intent.putExtra("mStringPath", mUrl);
-
-
                     startActivity(intent);
                 }
             }
@@ -379,12 +370,8 @@ public class ShopsDetailActivity extends Activity {
                         //Log.e(TAG,"objectId=="+objectId);
                         //"http://dev.wecity.co/task/mall/paddemo/postimg.do?objectId="
                         //192.168.1.57:8080
-
                         pathUrl = "http://laimihui.china1h.cn/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
-
-
                         SharedPreferencesUtils.saveString(ShopsDetailActivity.this, "pathUrl", pathUrl);
-
                         Log.e(TAG, "pathUrl==" + pathUrl);
                         //开启线程下载图片
                         downLoadDialog();

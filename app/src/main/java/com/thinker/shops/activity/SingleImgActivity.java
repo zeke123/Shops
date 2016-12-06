@@ -93,7 +93,6 @@ public class SingleImgActivity extends Activity
         OnekeyShare oks = new OnekeyShare();
         //关闭sso授权
         oks.disableSSOWhenAuthorize();
-
         if (pathUrl != null && mPath != null)
         {
             // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间等使用
