@@ -1,7 +1,9 @@
 package com.thinker.shops.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,6 +25,10 @@ import com.thinker.shops.R;
 import com.thinker.shops.bean.BackData;
 import com.thinker.shops.bean.DataItem;
 import com.thinker.shops.bean.JsonDatas;
+import com.thinker.shops.bean.Version;
+import com.thinker.shops.bean.VersionData;
+import com.thinker.shops.service.UpdateService;
+import com.thinker.shops.utils.AbbUtils;
 import com.thinker.shops.volley.VolleyInterface;
 import com.thinker.shops.volley.VolleyRequest;
 
@@ -38,6 +44,10 @@ public class MainActivity extends Activity
 
     public static final String TAG = "MainActivity";
     private String mShopName;
+    private String mApk;
+    private String versionName;
+    private int mVersioncode;
+
     private String mStatus;
     private BackData mData;
     private long mId;
@@ -52,7 +62,90 @@ public class MainActivity extends Activity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+        checkVersion();
         initEvent();
+    }
+
+    private void checkVersion()
+    {
+
+        VolleyRequest.requestPost(MainActivity.this, "http://dev.wecity.co/task/mall/app/get.do", "myVersion", null, new VolleyInterface( MainActivity.this, VolleyInterface.mListener,
+                VolleyInterface.mErrorListener) {
+
+            @Override
+            public void onMySuccess(String resault)
+            {
+                if (resault != null)
+                {
+
+
+                    Gson gson = new Gson();
+
+                    VersionData  mVersionData = gson.fromJson(resault.toString(), VersionData.class);
+
+                    if (mVersionData.getStatus().equals("OK"))
+                    {
+
+                        Version mVersion = mVersionData.getData();
+
+                        mVersioncode = mVersion.getVersioncode();
+
+                        versionName = mVersion.getVersion();
+
+                        mApk = mVersion.getApk();
+
+                        String localVersion= AbbUtils.getVersionCode(MainActivity.this);
+
+                        if (!(localVersion.equals(mVersioncode+""))) {
+
+                            showUpdateDialog();
+                        } else {
+                            //showNoUpdateDialog();
+                        }
+
+                    }
+
+                }
+            }
+
+            @Override
+            public void onMyError(VolleyError error)
+            {
+
+                Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void showUpdateDialog()
+    {
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(this.getString(R.string.app_name)).setMessage("发现新版本" + versionName).setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+                Intent updateIntent = new Intent(MainActivity.this, UpdateService.class);
+
+                if (AbbUtils.checkSDCard())
+                {
+                    updateIntent.putExtra("isSdChche", 1);
+                }
+                updateIntent.putExtra("URL", mApk);
+                startService(updateIntent);
+            }
+
+        }).setNegativeButton("下次再说", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+            }
+        });
+
+        alert.create().show();
+
     }
 
     @Override
@@ -115,10 +208,12 @@ public class MainActivity extends Activity
     {
 
         //"http://dev.wecity.co/task/mall/paddemo/selectCommunityByDomain.do"
+
+        //http://laimihui.china1h.cn
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("domain", name);
         VolleyRequest.requestPost(getApplicationContext(),
-                "http://dev.wecity.co/task/mall/paddemo/selectCommunityByDomain.do", "myTAG", params, new VolleyInterface(
+                "http://laimihui.china1h.cn/task/mall/paddemo/selectCommunityByDomain.do", "myTAG", params, new VolleyInterface(
                         MainActivity.this, VolleyInterface.mListener,
                         VolleyInterface.mErrorListener)
                 {

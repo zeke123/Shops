@@ -18,6 +18,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,7 +31,7 @@ import com.thinker.shops.bean.DataItem;
 import com.thinker.shops.db.MyDbOpenHelper;
 import com.thinker.shops.http.HttpClient;
 import com.thinker.shops.utils.DensityUtils;
-import com.thinker.shops.view.MenuGridView;
+import com.thinker.shops.utils.SharedPreferencesUtils;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -40,14 +41,20 @@ import java.util.Map;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
+
 /**
  * Created by zhoujian on 2016/11/16.
  */
 
-public class ShopsDetailActivity extends Activity
-{
+public class ShopsDetailActivity extends Activity {
     public static final String TAG = "ShopsDetailActivity";
+    @InjectView(R.id.im_back)
+    ImageView mImBack;
     private Map<Integer, String> map = new HashMap<Integer, String>();
+
+    private String pathUrl;
+
+
     //用于要播放的图片
     ArrayList<String> pictureList = new ArrayList<String>();
     @InjectView(R.id.im_personal)
@@ -57,7 +64,7 @@ public class ShopsDetailActivity extends Activity
     @InjectView(R.id.im_flush)
     ImageButton mImFlush;
     @InjectView(R.id.mGridViewImage)
-    MenuGridView mMGridViewImage;
+    GridView mMGridViewImage;
     private int mWidth;
     private String commuityOid;
     private long objectId;
@@ -71,11 +78,9 @@ public class ShopsDetailActivity extends Activity
     private MyAdater adater;
     private MyDbOpenHelper mHelper;
     private SQLiteDatabase SQLdb;
-    private int isDelete;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_shops_detail);
@@ -101,8 +106,7 @@ public class ShopsDetailActivity extends Activity
         clickEvent();
     }
 
-    private void queryDb()
-    {
+    private void queryDb() {
 
         //存放本地数据库数据
         dataList = new ArrayList<DataItem>();
@@ -171,9 +175,17 @@ public class ShopsDetailActivity extends Activity
             }
         });
 
+        mImBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
 
         mMGridViewImage.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             private String mUrl;
+
             @Override
             public void onItemClick(AdapterView<?> view, View view1, int postion, long l) {
                 queryDb();
@@ -183,6 +195,8 @@ public class ShopsDetailActivity extends Activity
                 } else {
                     Intent intent = new Intent(ShopsDetailActivity.this, SingleImgActivity.class);
                     intent.putExtra("mStringPath", mUrl);
+
+
                     startActivity(intent);
                 }
             }
@@ -239,6 +253,7 @@ public class ShopsDetailActivity extends Activity
         private String mShowimg;
         private String mUrl;
         private String mWatch;
+
         public int getCount() {
             if (dataList != null && dataList.size() > 0) {
                 return dataList.size();
@@ -343,7 +358,6 @@ public class ShopsDetailActivity extends Activity
                 holder.im_delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        isDelete = 1;
                         //把下载到本地的图片删除，删除一个字段
                         objectId = mList.get(position).getObjectId();
                         //跟新数据
@@ -365,7 +379,12 @@ public class ShopsDetailActivity extends Activity
                         //Log.e(TAG,"objectId=="+objectId);
                         //"http://dev.wecity.co/task/mall/paddemo/postimg.do?objectId="
                         //192.168.1.57:8080
-                        String pathUrl = "http://dev.wecity.co/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
+
+                        pathUrl = "http://laimihui.china1h.cn/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
+
+
+                        SharedPreferencesUtils.saveString(ShopsDetailActivity.this, "pathUrl", pathUrl);
+
                         Log.e(TAG, "pathUrl==" + pathUrl);
                         //开启线程下载图片
                         downLoadDialog();
