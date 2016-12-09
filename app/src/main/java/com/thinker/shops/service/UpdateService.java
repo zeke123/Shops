@@ -65,10 +65,6 @@ public class UpdateService extends android.app.Service
 		this.updateNotification = new Notification.Builder(this);
 
 
-
-
-
-
 		// 设置下载过程中，点击通知栏，回到主界面
 		//updateIntentU = new Intent(this, MainActivity.class);
 		//updatePendingIntent = PendingIntent.getActivity(this, 0, updateIntentU, 0);

@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -31,10 +32,12 @@ import com.thinker.shops.db.MyDbOpenHelper;
 import com.thinker.shops.http.HttpClient;
 import com.thinker.shops.utils.DensityUtils;
 import com.thinker.shops.utils.SharedPreferencesUtils;
+
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -161,7 +164,12 @@ public class ShopsDetailActivity extends Activity {
     private void clickEvent() {
         mImPersonal.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
+
+                //清空表中所有记录
+                SQLdb.execSQL("DELETE FROM picturetable");
+
                 Intent intent = new Intent(ShopsDetailActivity.this, MainActivity.class);
                 startActivity(intent);
 
@@ -171,6 +179,8 @@ public class ShopsDetailActivity extends Activity {
         mImBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //清空表中所有记录
+                SQLdb.execSQL("DELETE FROM picturetable");
                 finish();
             }
         });
@@ -493,5 +503,21 @@ public class ShopsDetailActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        //清空表中所有记录
+        SQLdb.execSQL("DELETE FROM picturetable");
+    }
+
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+
+
+            //清空表中所有记录
+            SQLdb.execSQL("DELETE FROM picturetable");
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

@@ -47,13 +47,13 @@ public class MainActivity extends Activity
     private String mApk;
     private String versionName;
     private int mVersioncode;
-
     private String mStatus;
     private BackData mData;
     private long mId;
     private ArrayList<DataItem> mList;
     @InjectView(R.id.tv_binder)
     TextView mTvBinder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -69,8 +69,8 @@ public class MainActivity extends Activity
     private void checkVersion()
     {
 
-        VolleyRequest.requestPost(MainActivity.this, "http://dev.wecity.co/task/mall/app/get.do", "myVersion", null, new VolleyInterface( MainActivity.this, VolleyInterface.mListener,
-                VolleyInterface.mErrorListener) {
+        VolleyRequest.requestPost(MainActivity.this, "http://laimihui.china1h.cn/task/mall/app/get.do", "myVersion", null, new VolleyInterface( MainActivity.this, VolleyInterface.mListener,VolleyInterface.mErrorListener)
+        {
 
             @Override
             public void onMySuccess(String resault)
@@ -78,9 +78,7 @@ public class MainActivity extends Activity
                 if (resault != null)
                 {
 
-
                     Gson gson = new Gson();
-
                     VersionData  mVersionData = gson.fromJson(resault.toString(), VersionData.class);
 
                     if (mVersionData.getStatus().equals("OK"))
@@ -100,7 +98,7 @@ public class MainActivity extends Activity
 
                             showUpdateDialog();
                         } else {
-                            //showNoUpdateDialog();
+                            Toast.makeText(MainActivity.this, "已经是最新版本", Toast.LENGTH_SHORT).show();
                         }
 
                     }
@@ -208,7 +206,6 @@ public class MainActivity extends Activity
     {
 
         //"http://dev.wecity.co/task/mall/paddemo/selectCommunityByDomain.do"
-
         //http://laimihui.china1h.cn
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("domain", name);
@@ -235,7 +232,6 @@ public class MainActivity extends Activity
                             mId = MainActivity.this.mData.getObjectId();
                             mList = MainActivity.this.mData.getProductList();
                             startShopsDetail();
-
                         }
                         else if("ERROR".equals(mStatus)){
                             mData = jsonObject.getString("data");
