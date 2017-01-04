@@ -8,6 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+
+    <style name="customHoloLight" parent="@android:style/Theme.Holo.Light">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
     <style name="customExitDailogStyle" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>
@@ -17,5 +23,4 @@
         <item name="android:backgroundDimEnabled">true</item>
 
     </style>
-
 </resources>

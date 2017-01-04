@@ -1,8 +1,10 @@
 package com.thinker.shops.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -25,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.thinker.shops.R;
 import com.thinker.shops.bean.DataItem;
@@ -167,11 +170,20 @@ public class ShopsDetailActivity extends Activity {
             public void onClick(View view)
             {
 
-                //清空表中所有记录
-                SQLdb.execSQL("DELETE FROM picturetable");
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShopsDetailActivity.this);
+                builder.setMessage("是否退出当前绑定的社区店？");
+                builder.setTitle("来米汇");
+                builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //清空表中所有记录
+                        SQLdb.execSQL("DELETE FROM picturetable");
+                        finish();
 
-                Intent intent = new Intent(ShopsDetailActivity.this, MainActivity.class);
-                startActivity(intent);
+                    }
+                });
+                builder.setNegativeButton("否", null);
+                builder.show();
 
             }
         });
@@ -179,9 +191,23 @@ public class ShopsDetailActivity extends Activity {
         mImBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //清空表中所有记录
-                SQLdb.execSQL("DELETE FROM picturetable");
-                finish();
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShopsDetailActivity.this);
+                builder.setMessage("是否退出当前绑定的社区店？");
+                builder.setTitle("来米汇");
+                builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //清空表中所有记录
+                        SQLdb.execSQL("DELETE FROM picturetable");
+                        finish();
+
+                    }
+                });
+                builder.setNegativeButton("否", null);
+                builder.show();
+
             }
         });
 
@@ -193,11 +219,17 @@ public class ShopsDetailActivity extends Activity {
             public void onItemClick(AdapterView<?> view, View view1, int postion, long l) {
                 queryDb();
                 mUrl = dataList.get(postion).getNewictureUrl();
+
+                String prodectName = dataList.get(postion).getProductName();
+
+
                 if ("null".equals(mUrl) || TextUtils.isEmpty(mUrl)) {
                     Toast.makeText(ShopsDetailActivity.this, "图片还未下载", Toast.LENGTH_SHORT).show();
                 } else {
                     Intent intent = new Intent(ShopsDetailActivity.this, SingleImgActivity.class);
                     intent.putExtra("mStringPath", mUrl);
+                    intent.putExtra("prodectName", prodectName);
+
                     startActivity(intent);
                 }
             }
@@ -244,6 +276,8 @@ public class ShopsDetailActivity extends Activity {
     }
 
     private void initData() {
+
+
         adater = new MyAdater();
         mMGridViewImage.setAdapter(adater);
         mMGridViewImage.setSelector(R.color.transparent);
@@ -305,6 +339,9 @@ public class ShopsDetailActivity extends Activity {
                 mShowimg = dataList.get(position).getPadshowimg();
                 String newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
                 Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
+
+
+
                 holder.tv_product_name.setText(dataList.get(position).getProductName());
                 //holder.tv_product_name.setText("正宗福建平和琯溪红肉蜜柚红心柚子新鲜农家特产纯天然有机水果10斤装 3-4个");
                 if ("null".equals(mUrl) || TextUtils.isEmpty(mUrl)) {
@@ -338,6 +375,7 @@ public class ShopsDetailActivity extends Activity {
                         ContentValues values = new ContentValues();
                         values.put("isWatch", "1");
                         SQLdb.update("picturetable", values, "objectId=?", new String[]{Long.toString(objectId)});
+                        queryDb();
 
                     }
                 });
@@ -353,6 +391,7 @@ public class ShopsDetailActivity extends Activity {
                         ContentValues values = new ContentValues();
                         values.put("isWatch", "0");
                         SQLdb.update("picturetable", values, "objectId=?", new String[]{Long.toString(objectId)});
+                        queryDb();
                     }
                 });
                 //删除的点击事件
@@ -369,6 +408,8 @@ public class ShopsDetailActivity extends Activity {
                         holder.im_botoom.setVisibility(View.VISIBLE);
                         holder.im_download.setVisibility(View.VISIBLE);
                         holder.ll_bottom_right.setVisibility(View.GONE);
+
+                        queryDb();
                     }
                 });
                 //下载的点击事件
@@ -404,19 +445,26 @@ public class ShopsDetailActivity extends Activity {
                                 holder.im_botoom.setVisibility(View.GONE);
                                 holder.ll_bottom_right.setVisibility(View.VISIBLE);
                                 holder.im_download.setVisibility(View.GONE);
+
+                                queryDb();
+
                                 Toast.makeText(ShopsDetailActivity.this, "图片下载完成", Toast.LENGTH_SHORT).show();
                             }
                         };
-                        Thread thread = new Thread() {
-                            public void run() {
-                                try {
+                        Thread thread = new Thread()
+                        {
+                            public void run()
+                            {
+                                try
+                                {
                                     HttpClient httpClient = new HttpClient();
                                     byte[] byteData = httpClient.getData(imgUrl);
                                     // SD卡的路径
                                     String sdCardPath = getSDCardPath();
-                                    if (sdCardIsExit()) {
+                                    if (sdCardIsExit())
+                                    {
                                         // 图片的保存路
-                                        img_path = sdCardPath + System.currentTimeMillis() + ".jpg";
+                                        img_path = sdCardPath + java.lang.System.currentTimeMillis() + ".jpg";
                                         FileOutputStream fos = new FileOutputStream(img_path, false);
                                         // 把图片写到本地
                                         fos.write(byteData);
@@ -428,12 +476,15 @@ public class ShopsDetailActivity extends Activity {
                                         msg.what = 1;
                                         hander.sendMessage(msg);
                                     }
-                                } catch (Exception e) {
+                                }
+                                catch (Exception e)
+                                {
                                     e.printStackTrace();
                                 }
                             }
                         };
                         thread.start();
+
                     }
                 });
 
@@ -456,6 +507,8 @@ public class ShopsDetailActivity extends Activity {
     private void downLoadDialog() {
         progress = new ProgressDialog(ShopsDetailActivity.this);
         progress.setMessage("请等候，图片下载中...");
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.setCanceledOnTouchOutside(false);
     }
 
     /**
@@ -513,9 +566,20 @@ public class ShopsDetailActivity extends Activity {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
 
 
-            //清空表中所有记录
-            SQLdb.execSQL("DELETE FROM picturetable");
-            finish();
+            AlertDialog.Builder builder = new AlertDialog.Builder(ShopsDetailActivity.this);
+            builder.setMessage("是否退出当前绑定的社区店？");
+            builder.setTitle("来米汇");
+            builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //清空表中所有记录
+                    SQLdb.execSQL("DELETE FROM picturetable");
+                    finish();
+
+                }
+            });
+            builder.setNegativeButton("否", null);
+            builder.show();
             return true;
         }
         return super.onKeyDown(keyCode, event);
