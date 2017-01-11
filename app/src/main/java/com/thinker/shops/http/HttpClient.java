@@ -130,11 +130,7 @@ public class HttpClient
 			URL url = new URL(urlString);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-			//conn.setRequestMethod("GET");
-			//conn.setConnectTimeout(connectionTimeout);
-			//conn.setReadTimeout(readTimeout);
-			//conn.setDoInput(true);
-			//conn.setDoOutput(true);
+
 			conn.connect();
 
 			if (httpHeaders != null && httpHeaders.size() > 0)

@@ -13,14 +13,6 @@
         android:background="#2c9a2d">
 
 
-        <ImageView
-            android:id="@+id/im_back"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
-            android:background="@mipmap/itemback"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,34 +25,19 @@
 
         <ImageButton
             android:id="@+id/im_personal"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
             android:background="@mipmap/personal"/>
 
-        <ImageButton
-            android:id="@+id/im_start"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
-            android:layout_toLeftOf="@id/im_personal"
-            android:background="@mipmap/start"/>
 
-        <ImageButton
-            android:id="@+id/im_flush"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
-            android:layout_toLeftOf="@id/im_start"
-            android:background="@mipmap/flush"/>
     </RelativeLayout>
 
 
     <GridView
+        android:layout_weight="1"
         android:id="@+id/mGridViewImage"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -68,6 +45,28 @@
         android:horizontalSpacing="10dp"
         android:numColumns="3"
         android:verticalSpacing="10dp"/>
+
+
+    <LinearLayout
+        android:layout_marginBottom="0dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/bt_download"
+            android:text="下载全部"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/bt_start"
+            android:text="播放图片"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 </LinearLayout>
 

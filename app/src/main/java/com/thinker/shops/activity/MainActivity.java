@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.alibaba.fastjson.JSONObject;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
@@ -31,11 +30,9 @@ import com.thinker.shops.service.UpdateService;
 import com.thinker.shops.utils.AbbUtils;
 import com.thinker.shops.volley.VolleyInterface;
 import com.thinker.shops.volley.VolleyRequest;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -77,7 +74,6 @@ public class MainActivity extends Activity
             {
                 if (resault != null)
                 {
-
                     Gson gson = new Gson();
                     VersionData  mVersionData = gson.fromJson(resault.toString(), VersionData.class);
 
@@ -254,5 +250,6 @@ public class MainActivity extends Activity
         intent.putExtra("mId",mId+"");
         intent.putExtra("mList",(Serializable) mList);
         startActivity(intent);
+        finish();
     }
 }

@@ -29,7 +29,7 @@
         android:theme="@style/customHoloLight">
 
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.SplashActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden">
             <intent-filter>
@@ -39,6 +39,12 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.MainActivity"
+                  android:screenOrientation="portrait"/>
+
+
+        <activity android:name=".activity.DownLoadActivity"
+                  android:screenOrientation="portrait"/>
 
         <activity
             android:name="com.mob.tools.MobUIShell"
@@ -47,9 +53,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 
-
         <!--微信分享回调 -->
-
 
         <activity
             android:name="cn.sharesdk.onekeyshare.demo.wxapi.WXEntryActivity"
@@ -67,8 +71,8 @@
         <activity android:name=".activity.SingleImgActivity"
                   android:screenOrientation="portrait"/>
 
-
         <service android:name=".service.UpdateService"/>
+
     </application>
 
 </manifest>

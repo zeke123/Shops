@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -37,8 +38,10 @@ import com.thinker.shops.utils.DensityUtils;
 import com.thinker.shops.utils.SharedPreferencesUtils;
 
 import java.io.FileOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import butterknife.ButterKnife;
@@ -52,18 +55,18 @@ import butterknife.InjectView;
 public class ShopsDetailActivity extends Activity {
 
     public static final String TAG = "ShopsDetailActivity";
-    @InjectView(R.id.im_back)
-    ImageView mImBack;
+    @InjectView(R.id.bt_download)
+    Button mBtDownload;
+    @InjectView(R.id.bt_start)
+    Button mBtStart;
+    private long exitTime;
     private Map<Integer, String> map = new HashMap<Integer, String>();
     private String pathUrl;
     //用于要播放的图片
     ArrayList<String> pictureList = new ArrayList<String>();
     @InjectView(R.id.im_personal)
     ImageButton mImPersonal;
-    @InjectView(R.id.im_start)
-    ImageButton mImStart;
-    @InjectView(R.id.im_flush)
-    ImageButton mImFlush;
+
     @InjectView(R.id.mGridViewImage)
     GridView mMGridViewImage;
     private int mWidth;
@@ -167,31 +170,7 @@ public class ShopsDetailActivity extends Activity {
     private void clickEvent() {
         mImPersonal.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(ShopsDetailActivity.this);
-                builder.setMessage("是否退出当前绑定的社区店？");
-                builder.setTitle("来米汇");
-                builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //清空表中所有记录
-                        SQLdb.execSQL("DELETE FROM picturetable");
-                        finish();
-
-                    }
-                });
-                builder.setNegativeButton("否", null);
-                builder.show();
-
-            }
-        });
-
-        mImBack.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View view) {
-
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(ShopsDetailActivity.this);
                 builder.setMessage("是否退出当前绑定的社区店？");
@@ -222,32 +201,54 @@ public class ShopsDetailActivity extends Activity {
 
                 String prodectName = dataList.get(postion).getProductName();
 
-
                 if ("null".equals(mUrl) || TextUtils.isEmpty(mUrl)) {
                     Toast.makeText(ShopsDetailActivity.this, "图片还未下载", Toast.LENGTH_SHORT).show();
                 } else {
                     Intent intent = new Intent(ShopsDetailActivity.this, SingleImgActivity.class);
                     intent.putExtra("mStringPath", mUrl);
                     intent.putExtra("prodectName", prodectName);
-
                     startActivity(intent);
                 }
             }
         });
 
-        mImFlush.setOnClickListener(new View.OnClickListener() {
+        //下载的点击按钮
+        mBtDownload.setOnClickListener(new View.OnClickListener()
+        {
+
+            private DataItem mNext;
+            private String mUrl;
+
             @Override
-            public void onClick(View view) {
-                //刷新的按钮
+            public void onClick(View v)
+            {
+
                 queryDb();
-                //初始化数据
-                initData();
-                adater.notifyDataSetChanged();
-                Toast.makeText(ShopsDetailActivity.this, "已经是最新数据", Toast.LENGTH_SHORT).show();
+
+                if (dataList != null && dataList.size() > 0) {
+
+
+                    Iterator<DataItem> sListIterator = dataList.iterator();
+                    while(sListIterator.hasNext()){
+                        mNext = sListIterator.next();
+                        mUrl = mNext.getNewictureUrl();
+                        if (null!=mUrl && !(mUrl.equals("null"))&&  !mUrl.equals("")){
+
+                            sListIterator.remove();
+                        }
+                    }
+
+                    Intent intent =  new Intent(ShopsDetailActivity.this,DownLoadActivity.class);
+                    intent.putExtra("dataList",(Serializable) dataList);
+                    intent.putExtra("commuityOid",commuityOid);
+                    startActivity(intent);
+
+                }
             }
         });
 
-        mImStart.setOnClickListener(new View.OnClickListener() {
+
+        mBtStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 queryDb();
@@ -341,16 +342,15 @@ public class ShopsDetailActivity extends Activity {
                 Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
 
 
-
                 holder.tv_product_name.setText(dataList.get(position).getProductName());
                 //holder.tv_product_name.setText("正宗福建平和琯溪红肉蜜柚红心柚子新鲜农家特产纯天然有机水果10斤装 3-4个");
                 if ("null".equals(mUrl) || TextUtils.isEmpty(mUrl)) {
                     //下载的按钮可见，浮层可见
-                    holder.im_download.setVisibility(View.VISIBLE);
+                   // holder.im_download.setVisibility(View.VISIBLE);
                     holder.im_botoom.setVisibility(View.VISIBLE);
                     holder.ll_bottom_right.setVisibility(View.INVISIBLE);
                 } else {
-                    holder.im_download.setVisibility(View.INVISIBLE);
+                   // holder.im_download.setVisibility(View.INVISIBLE);
                     holder.im_botoom.setVisibility(View.INVISIBLE);
                     holder.ll_bottom_right.setVisibility(View.VISIBLE);
                     mWatch = dataList.get(position).getIsWatch();
@@ -408,7 +408,6 @@ public class ShopsDetailActivity extends Activity {
                         holder.im_botoom.setVisibility(View.VISIBLE);
                         holder.im_download.setVisibility(View.VISIBLE);
                         holder.ll_bottom_right.setVisibility(View.GONE);
-
                         queryDb();
                     }
                 });
@@ -445,26 +444,20 @@ public class ShopsDetailActivity extends Activity {
                                 holder.im_botoom.setVisibility(View.GONE);
                                 holder.ll_bottom_right.setVisibility(View.VISIBLE);
                                 holder.im_download.setVisibility(View.GONE);
-
                                 queryDb();
-
                                 Toast.makeText(ShopsDetailActivity.this, "图片下载完成", Toast.LENGTH_SHORT).show();
                             }
                         };
-                        Thread thread = new Thread()
-                        {
-                            public void run()
-                            {
-                                try
-                                {
+                        Thread thread = new Thread() {
+                            public void run() {
+                                try {
                                     HttpClient httpClient = new HttpClient();
                                     byte[] byteData = httpClient.getData(imgUrl);
                                     // SD卡的路径
                                     String sdCardPath = getSDCardPath();
-                                    if (sdCardIsExit())
-                                    {
+                                    if (sdCardIsExit()) {
                                         // 图片的保存路
-                                        img_path = sdCardPath + java.lang.System.currentTimeMillis() + ".jpg";
+                                        img_path = sdCardPath + System.currentTimeMillis() + ".jpg";
                                         FileOutputStream fos = new FileOutputStream(img_path, false);
                                         // 把图片写到本地
                                         fos.write(byteData);
@@ -476,9 +469,7 @@ public class ShopsDetailActivity extends Activity {
                                         msg.what = 1;
                                         hander.sendMessage(msg);
                                     }
-                                }
-                                catch (Exception e)
-                                {
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -486,8 +477,8 @@ public class ShopsDetailActivity extends Activity {
                         thread.start();
 
                     }
-                });
 
+                });
             }
             return view;
         }
@@ -541,6 +532,8 @@ public class ShopsDetailActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        queryDb();
+        adater.notifyDataSetChanged();
     }
 
     @Override
@@ -561,27 +554,20 @@ public class ShopsDetailActivity extends Activity {
         SQLdb.execSQL("DELETE FROM picturetable");
     }
 
-
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+        if (keyCode == KeyEvent.KEYCODE_BACK
+                && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
+                Toast.makeText(getApplicationContext(), "再按一次退出程序",
+                        Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                moveTaskToBack(true);
+            }
 
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(ShopsDetailActivity.this);
-            builder.setMessage("是否退出当前绑定的社区店？");
-            builder.setTitle("来米汇");
-            builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //清空表中所有记录
-                    SQLdb.execSQL("DELETE FROM picturetable");
-                    finish();
-
-                }
-            });
-            builder.setNegativeButton("否", null);
-            builder.show();
             return true;
         }
         return super.onKeyDown(keyCode, event);
     }
+
 }
