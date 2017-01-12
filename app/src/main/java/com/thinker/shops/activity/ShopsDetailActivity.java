@@ -222,27 +222,27 @@ public class ShopsDetailActivity extends Activity {
             @Override
             public void onClick(View v)
             {
-
                 queryDb();
 
                 if (dataList != null && dataList.size() > 0) {
-
-
                     Iterator<DataItem> sListIterator = dataList.iterator();
                     while(sListIterator.hasNext()){
                         mNext = sListIterator.next();
                         mUrl = mNext.getNewictureUrl();
                         if (null!=mUrl && !(mUrl.equals("null"))&&  !mUrl.equals("")){
-
                             sListIterator.remove();
                         }
                     }
 
-                    Intent intent =  new Intent(ShopsDetailActivity.this,DownLoadActivity.class);
-                    intent.putExtra("dataList",(Serializable) dataList);
-                    intent.putExtra("commuityOid",commuityOid);
-                    startActivity(intent);
-
+                    if(dataList!=null && dataList.size()>0){
+                        Intent intent =  new Intent(ShopsDetailActivity.this,DownLoadActivity.class);
+                        intent.putExtra("dataList",(Serializable) dataList);
+                        intent.putExtra("commuityOid",commuityOid);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(ShopsDetailActivity.this, "全部图片已下载完成", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                 }
             }
         });
@@ -276,9 +276,8 @@ public class ShopsDetailActivity extends Activity {
         });
     }
 
-    private void initData() {
-
-
+    private void initData()
+    {
         adater = new MyAdater();
         mMGridViewImage.setAdapter(adater);
         mMGridViewImage.setSelector(R.color.transparent);
