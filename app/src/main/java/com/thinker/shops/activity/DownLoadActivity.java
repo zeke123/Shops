@@ -83,7 +83,6 @@ public class DownLoadActivity extends Activity {
         //开启线程下载图片
         startDownLoaad();
         setData();
-
         clickEvent();
     }
 
@@ -141,7 +140,6 @@ public class DownLoadActivity extends Activity {
         };
         thread = new MyThread();
         thread.start();
-
     }
 
     public class MyThread extends Thread {
@@ -175,9 +173,7 @@ public class DownLoadActivity extends Activity {
                         message.what = FLAG;
                         hander.sendMessage(message);
                     }
-
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -243,9 +239,7 @@ public class DownLoadActivity extends Activity {
     class ViewHolder {
         TextView tv_name;
         TextView tv_statas;
-
     }
-
 
     @Override
     protected void onRestart() {
@@ -270,14 +264,11 @@ public class DownLoadActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
     }
 
     /**
@@ -309,15 +300,14 @@ public class DownLoadActivity extends Activity {
                 builder.setTitle("来米汇");
                 builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
+                    public void onClick(DialogInterface dialog, int which)
+                    {
                         thread.stop();
                         finish();
                     }
                 });
                 builder.setNegativeButton("否", null);
                 builder.show();
-
             }
             return true;
         }
