@@ -28,6 +28,7 @@ import com.thinker.shops.bean.Version;
 import com.thinker.shops.bean.VersionData;
 import com.thinker.shops.service.UpdateService;
 import com.thinker.shops.utils.AbbUtils;
+import com.thinker.shops.utils.SharedPreferencesUtils;
 import com.thinker.shops.volley.VolleyInterface;
 import com.thinker.shops.volley.VolleyRequest;
 import java.io.Serializable;
@@ -81,11 +82,8 @@ public class MainActivity extends Activity
                     {
 
                         Version mVersion = mVersionData.getData();
-
                         mVersioncode = mVersion.getVersioncode();
-
                         versionName = mVersion.getVersion();
-
                         mApk = mVersion.getApk();
 
                         String localVersion= AbbUtils.getVersionCode(MainActivity.this);
@@ -98,7 +96,6 @@ public class MainActivity extends Activity
                         }
 
                     }
-
                 }
             }
 
@@ -198,13 +195,14 @@ public class MainActivity extends Activity
         dialog.show();
     }
 
-    private void initDatas(String name)
+    private void initDatas(final String name)
     {
 
         //"http://dev.wecity.co/task/mall/paddemo/selectCommunityByDomain.do"
         //http://laimihui.china1h.cn
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("domain", name);
+
         VolleyRequest.requestPost(getApplicationContext(),
                 "http://laimihui.china1h.cn/task/mall/paddemo/selectCommunityByDomain.do", "myTAG", params, new VolleyInterface(
                         MainActivity.this, VolleyInterface.mListener,
@@ -216,6 +214,9 @@ public class MainActivity extends Activity
                     @Override
                     public void onMySuccess(String resault)
                     {
+
+                        SharedPreferencesUtils.saveString(MainActivity.this,"SHOPING_NAME",name);
+
                         Log.e(TAG, "resault============"+resault.toString());
                         JSONObject  jsonObject = JSONObject.parseObject(resault);
                         mStatus = jsonObject.getString("status");
@@ -239,7 +240,7 @@ public class MainActivity extends Activity
                     @Override
                     public void onMyError(VolleyError error)
                     {
-                        Toast.makeText(getApplicationContext(),error.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"网络连接错误", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -252,4 +253,5 @@ public class MainActivity extends Activity
         startActivity(intent);
         finish();
     }
+
 }
