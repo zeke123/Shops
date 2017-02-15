@@ -214,9 +214,7 @@ public class MainActivity extends Activity
                     @Override
                     public void onMySuccess(String resault)
                     {
-
                         SharedPreferencesUtils.saveString(MainActivity.this,"SHOPING_NAME",name);
-
                         Log.e(TAG, "resault============"+resault.toString());
                         JSONObject  jsonObject = JSONObject.parseObject(resault);
                         mStatus = jsonObject.getString("status");
@@ -253,5 +251,4 @@ public class MainActivity extends Activity
         startActivity(intent);
         finish();
     }
-
 }
