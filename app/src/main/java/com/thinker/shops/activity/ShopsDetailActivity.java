@@ -180,6 +180,7 @@ public class ShopsDetailActivity extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                         //清空表中所有记录
                         SQLdb.execSQL("DELETE FROM picturetable");
+                        SharedPreferencesUtils.clearString(ShopsDetailActivity.this,"SHOPING_NAME");
                         finish();
 
                     }
