@@ -159,8 +159,6 @@ public class Kanner extends FrameLayout {
     private void showTime() {
         vp.setAdapter(new KannerPagerAdapter());
 
-
-
         vp.setFocusable(true);
         vp.setCurrentItem(1);
         currentItem = 1;
@@ -169,7 +167,7 @@ public class Kanner extends FrameLayout {
     }
 
     private void startPlay() {
-        isAutoPlay = true;
+       // isAutoPlay = true;
         handler.postDelayed(task, 5000);
     }
 
