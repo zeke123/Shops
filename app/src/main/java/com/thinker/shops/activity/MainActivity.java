@@ -103,7 +103,7 @@ public class MainActivity extends Activity
             public void onMyError(VolleyError error)
             {
 
-                Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
             }
         });
 

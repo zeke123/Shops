@@ -206,15 +206,11 @@ public class ShopsDetailActivity extends Activity {
                     Toast.makeText(ShopsDetailActivity.this, "图片还未下载", Toast.LENGTH_SHORT).show();
                 } else {
 
-
                    /* Intent intent = new Intent(ShopsDetailActivity.this, SingleImgActivity.class);
                     intent.putExtra("mStringPath", mUrl);
                     intent.putExtra("prodectName", prodectName);
                     startActivity(intent);*/
-
-
                     queryDb();
-
                     if (dataList != null && dataList.size() > 0) {
                         pictureList.clear();
                         for (int i = 0; i < dataList.size(); i++) {
@@ -223,7 +219,6 @@ public class ShopsDetailActivity extends Activity {
                                 pictureList.add(dataList.get(i).getNewictureUrl());
                             }
                         }
-
                         if (pictureList != null && pictureList.size() > 0) {
                             Intent intent = new Intent(ShopsDetailActivity.this, KannerActivity.class);
                             intent.putStringArrayListExtra("pictureList", pictureList);
@@ -244,7 +239,6 @@ public class ShopsDetailActivity extends Activity {
 
             private DataItem mNext;
             private String mUrl;
-
             @Override
             public void onClick(View v)
             {
@@ -272,7 +266,6 @@ public class ShopsDetailActivity extends Activity {
                 }
             }
         });
-
     }
 
     private void initData()
@@ -283,11 +276,11 @@ public class ShopsDetailActivity extends Activity {
         adater.notifyDataSetChanged();
     }
 
-    class MyAdater extends BaseAdapter {
+    class MyAdater extends BaseAdapter
+    {
         private String mShowimg;
         private String mUrl;
         private String mWatch;
-
         private String productName;
 
         public int getCount() {
