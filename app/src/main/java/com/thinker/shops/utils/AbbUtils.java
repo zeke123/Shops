@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 
 public class AbbUtils {
@@ -58,6 +60,30 @@ public class AbbUtils {
 		if (Environment.MEDIA_MOUNTED.equals(status))
 		{
 			return true;
+		}
+		return false;
+	}
+
+
+	/**
+	 * 检测当的网络（WLAN、3G/4G）状态
+	 * @param context Context
+	 * @return true 表示网络可用
+	 */
+	public static boolean isNetworkAvailable(Context context) {
+		ConnectivityManager connectivity = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (connectivity != null) {
+			NetworkInfo info = connectivity.getActiveNetworkInfo();
+			if (info != null && info.isConnected())
+			{
+				// 当前网络是连接的
+				if (info.getState() == NetworkInfo.State.CONNECTED)
+				{
+					// 当前所连接的网络可用
+					return true;
+				}
+			}
 		}
 		return false;
 	}

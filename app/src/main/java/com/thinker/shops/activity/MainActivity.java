@@ -94,7 +94,7 @@ public class MainActivity extends Activity
             public void onMyError(VolleyError error)
             {
 
-                Toast.makeText(MainActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "当前无网络连接，请检查后重试", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -223,7 +223,7 @@ public class MainActivity extends Activity
                     @Override
                     public void onMyError(VolleyError error)
                     {
-                        Toast.makeText(getApplicationContext(),"网络连接错误", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"当前无网络连接，请检查后重试", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

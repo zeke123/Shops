@@ -34,6 +34,7 @@ import com.thinker.shops.R;
 import com.thinker.shops.bean.DataItem;
 import com.thinker.shops.db.MyDbOpenHelper;
 import com.thinker.shops.http.HttpClient;
+import com.thinker.shops.utils.AbbUtils;
 import com.thinker.shops.utils.DensityUtils;
 import com.thinker.shops.utils.SharedPreferencesUtils;
 
@@ -242,28 +243,43 @@ public class ShopsDetailActivity extends Activity {
             @Override
             public void onClick(View v)
             {
-                queryDb();
 
-                if (dataList != null && dataList.size() > 0) {
-                    Iterator<DataItem> sListIterator = dataList.iterator();
-                    while(sListIterator.hasNext()){
-                        mNext = sListIterator.next();
-                        mUrl = mNext.getNewictureUrl();
-                        if (null!=mUrl && !(mUrl.equals("null"))&&  !mUrl.equals("")){
-                            sListIterator.remove();
+                if(AbbUtils.isNetworkAvailable(ShopsDetailActivity.this)){
+
+                    queryDb();
+
+                    if (dataList != null && dataList.size() > 0) {
+                        Iterator<DataItem> sListIterator = dataList.iterator();
+                        while(sListIterator.hasNext()){
+                            mNext = sListIterator.next();
+                            mUrl = mNext.getNewictureUrl();
+                            if (null!=mUrl && !(mUrl.equals("null"))&&  !mUrl.equals("")){
+                                sListIterator.remove();
+                            }
+                        }
+
+                        if(dataList!=null && dataList.size()>0){
+                            Intent intent =  new Intent(ShopsDetailActivity.this,DownLoadActivity.class);
+                            intent.putExtra("dataList",(Serializable) dataList);
+                            intent.putExtra("commuityOid",commuityOid);
+                            startActivity(intent);
+                        }else{
+                            Toast.makeText(ShopsDetailActivity.this, "全部图片已下载完成", Toast.LENGTH_SHORT).show();
+                            return;
                         }
                     }
 
-                    if(dataList!=null && dataList.size()>0){
-                        Intent intent =  new Intent(ShopsDetailActivity.this,DownLoadActivity.class);
-                        intent.putExtra("dataList",(Serializable) dataList);
-                        intent.putExtra("commuityOid",commuityOid);
-                        startActivity(intent);
-                    }else{
-                        Toast.makeText(ShopsDetailActivity.this, "全部图片已下载完成", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                }else{
+
+                    Toast.makeText(getApplicationContext(),"当前无网络连接，请检查后重试", Toast.LENGTH_SHORT).show();
+
                 }
+
+
+
+
+
+
             }
         });
     }
