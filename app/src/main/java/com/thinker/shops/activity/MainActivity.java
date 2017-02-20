@@ -52,7 +52,6 @@ public class MainActivity extends Activity
     @InjectView(R.id.tv_binder)
     TextView mTvBinder;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -66,10 +65,8 @@ public class MainActivity extends Activity
 
     private void checkVersion()
     {
-
         VolleyRequest.requestPost(MainActivity.this, "http://laimihui.china1h.cn/task/mall/app/get.do", "myVersion", null, new VolleyInterface( MainActivity.this, VolleyInterface.mListener,VolleyInterface.mErrorListener)
         {
-
             @Override
             public void onMySuccess(String resault)
             {
@@ -80,25 +77,19 @@ public class MainActivity extends Activity
 
                     if (mVersionData.getStatus().equals("OK"))
                     {
-
                         Version mVersion = mVersionData.getData();
                         mVersioncode = mVersion.getVersioncode();
                         versionName = mVersion.getVersion();
                         mApk = mVersion.getApk();
-
                         String localVersion= AbbUtils.getVersionCode(MainActivity.this);
-
                         if (!(localVersion.equals(mVersioncode+""))) {
-
                             showUpdateDialog();
                         } else {
                             Toast.makeText(MainActivity.this, "已经是最新版本", Toast.LENGTH_SHORT).show();
                         }
-
                     }
                 }
             }
-
             @Override
             public void onMyError(VolleyError error)
             {
@@ -106,19 +97,16 @@ public class MainActivity extends Activity
                 Toast.makeText(MainActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     private void showUpdateDialog()
     {
-
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle(this.getString(R.string.app_name)).setMessage("发现新版本" + versionName).setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which)
             {
                 dialog.dismiss();
                 Intent updateIntent = new Intent(MainActivity.this, UpdateService.class);
-
                 if (AbbUtils.checkSDCard())
                 {
                     updateIntent.putExtra("isSdChche", 1);
@@ -172,7 +160,6 @@ public class MainActivity extends Activity
             public void onClick(View v)
             {
                 mShopName = shops_name.getText().toString().trim();
-
                 if(!TextUtils.isEmpty(mShopName)){
                     dialog.dismiss();
                     initDatas(mShopName);
@@ -208,7 +195,6 @@ public class MainActivity extends Activity
                         MainActivity.this, VolleyInterface.mListener,
                         VolleyInterface.mErrorListener)
                 {
-
                     private String mData;
                     private String mStatus;
                     @Override
