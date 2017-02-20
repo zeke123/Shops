@@ -165,7 +165,7 @@ public class MainActivity extends Activity
         View view = LayoutInflater.from(this).inflate(R.layout.delete_project_dialog, null);
         Button confirm_btn = (Button) view.findViewById(R.id.confirm_btn);
         Button cancel_btn = (Button) view.findViewById(R.id.cancel_btn);
-       final EditText shops_name = (EditText) view.findViewById(R.id.shops_name);
+        final EditText shops_name = (EditText) view.findViewById(R.id.shops_name);
 
         confirm_btn.setOnClickListener(new View.OnClickListener()
         {
