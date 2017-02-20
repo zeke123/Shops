@@ -234,7 +234,6 @@ public class MainActivity extends Activity
                             return;
                         }
                     }
-
                     @Override
                     public void onMyError(VolleyError error)
                     {

@@ -46,6 +46,8 @@ import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 
 /**
@@ -57,8 +59,6 @@ public class ShopsDetailActivity extends Activity {
     public static final String TAG = "ShopsDetailActivity";
     @InjectView(R.id.bt_download)
     Button mBtDownload;
-    @InjectView(R.id.bt_start)
-    Button mBtStart;
     private long exitTime;
     private Map<Integer, String> map = new HashMap<Integer, String>();
     private String pathUrl;
@@ -205,10 +205,35 @@ public class ShopsDetailActivity extends Activity {
                 if ("null".equals(mUrl) || TextUtils.isEmpty(mUrl)) {
                     Toast.makeText(ShopsDetailActivity.this, "图片还未下载", Toast.LENGTH_SHORT).show();
                 } else {
-                    Intent intent = new Intent(ShopsDetailActivity.this, SingleImgActivity.class);
+
+
+                   /* Intent intent = new Intent(ShopsDetailActivity.this, SingleImgActivity.class);
                     intent.putExtra("mStringPath", mUrl);
                     intent.putExtra("prodectName", prodectName);
-                    startActivity(intent);
+                    startActivity(intent);*/
+
+
+                    queryDb();
+
+                    if (dataList != null && dataList.size() > 0) {
+                        pictureList.clear();
+                        for (int i = 0; i < dataList.size(); i++) {
+                            if ("1".equals(dataList.get(i).getIsWatch()) && ((!("null".equals(dataList.get(i).
+                                    getNewictureUrl()))) || !TextUtils.isEmpty(dataList.get(i).getNewictureUrl()))) {
+                                pictureList.add(dataList.get(i).getNewictureUrl());
+                            }
+                        }
+
+                        if (pictureList != null && pictureList.size() > 0) {
+                            Intent intent = new Intent(ShopsDetailActivity.this, KannerActivity.class);
+                            intent.putStringArrayListExtra("pictureList", pictureList);
+                            intent.putExtra("mStringPath", mUrl);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                 }
             }
         });
@@ -248,33 +273,6 @@ public class ShopsDetailActivity extends Activity {
             }
         });
 
-
-        mBtStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                queryDb();
-
-                if (dataList != null && dataList.size() > 0) {
-                    pictureList.clear();
-                    for (int i = 0; i < dataList.size(); i++) {
-                        if ("1".equals(dataList.get(i).getIsWatch()) && ((!("null".equals(dataList.get(i).
-                                getNewictureUrl()))) || !TextUtils.isEmpty(dataList.get(i).getNewictureUrl()))) {
-                            pictureList.add(dataList.get(i).getNewictureUrl());
-
-                        }
-                    }
-
-                    if (pictureList != null && pictureList.size() > 0) {
-                        Intent intent = new Intent(ShopsDetailActivity.this, KannerActivity.class);
-                        intent.putStringArrayListExtra("pictureList", pictureList);
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
-            }
-        });
     }
 
     private void initData()
@@ -289,6 +287,8 @@ public class ShopsDetailActivity extends Activity {
         private String mShowimg;
         private String mUrl;
         private String mWatch;
+
+        private String productName;
 
         public int getCount() {
             if (dataList != null && dataList.size() > 0) {
@@ -319,6 +319,8 @@ public class ShopsDetailActivity extends Activity {
                 holder.im_botoom = (ImageView) view.findViewById(R.id.im_botoom);
                 holder.im_delete = (ImageView) view.findViewById(R.id.im_delete);
                 holder.im_download = (ImageView) view.findViewById(R.id.im_download);
+                holder.im_share = (ImageView) view.findViewById(R.id.im_share);
+
                 holder.im_watch = (ImageView) view.findViewById(R.id.im_watch);
                 holder.im_not_watch = (ImageView) view.findViewById(R.id.im_not_watch);
                 holder.ll_bottom_right = (LinearLayout) view.findViewById(R.id.ll_bottom_right);
@@ -341,8 +343,8 @@ public class ShopsDetailActivity extends Activity {
                 String newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
                 Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
 
-
-                holder.tv_product_name.setText(dataList.get(position).getProductName());
+                 productName =  dataList.get(position).getProductName();
+                holder.tv_product_name.setText(productName);
                 //holder.tv_product_name.setText("正宗福建平和琯溪红肉蜜柚红心柚子新鲜农家特产纯天然有机水果10斤装 3-4个");
                 if ("null".equals(mUrl) || TextUtils.isEmpty(mUrl)) {
                     //下载的按钮可见，浮层可见
@@ -356,20 +358,31 @@ public class ShopsDetailActivity extends Activity {
                     mWatch = dataList.get(position).getIsWatch();
                     if ("0".equals(mWatch)) {
                         holder.im_watch.setVisibility(View.INVISIBLE);
-                        holder.im_not_watch.setVisibility(View.VISIBLE);
+                        holder.im_not_watch.setVisibility(View.GONE);
                     } else if ("1".equals(mWatch)) {
-                        holder.im_watch.setVisibility(View.VISIBLE);
-                        holder.im_not_watch.setVisibility(View.INVISIBLE);
+                        holder.im_watch.setVisibility(View.GONE);
+                        holder.im_not_watch.setVisibility(View.GONE);
                     }
                 }
+
+
+                holder.im_share.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        objectId = dataList.get(position).getObjectId();
+                        pathUrl = "http://laimihui.china1h.cn/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
+                        productName =  dataList.get(position).getProductName();
+                        showShare(pathUrl,productName);
+                    }
+                });
 
                 //眼睛的点击事件
                 holder.im_not_watch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         //0---->1
-                        holder.im_watch.setVisibility(View.VISIBLE);
-                        holder.im_not_watch.setVisibility(View.INVISIBLE);
+                        holder.im_watch.setVisibility(View.GONE);
+                        holder.im_not_watch.setVisibility(View.GONE);
                         objectId = mList.get(position).getObjectId();
                         //跟新数据
                         ContentValues values = new ContentValues();
@@ -384,8 +397,8 @@ public class ShopsDetailActivity extends Activity {
                     @Override
                     public void onClick(View view) {
                         //  1--->0
-                        holder.im_watch.setVisibility(View.INVISIBLE);
-                        holder.im_not_watch.setVisibility(View.VISIBLE);
+                        holder.im_watch.setVisibility(View.GONE);
+                        holder.im_not_watch.setVisibility(View.GONE);
                         objectId = mList.get(position).getObjectId();
                         //跟新数据
                         ContentValues values = new ContentValues();
@@ -406,7 +419,7 @@ public class ShopsDetailActivity extends Activity {
                         values.put("isWatch", "0");
                         SQLdb.update("picturetable", values, "objectId=?", new String[]{Long.toString(objectId)});
                         holder.im_botoom.setVisibility(View.VISIBLE);
-                        holder.im_download.setVisibility(View.VISIBLE);
+                        holder.im_download.setVisibility(View.GONE);
                         holder.ll_bottom_right.setVisibility(View.GONE);
                         queryDb();
                     }
@@ -486,6 +499,8 @@ public class ShopsDetailActivity extends Activity {
         class ViewHolder {
             ImageView im_picture;
             ImageView im_botoom;
+
+            ImageView im_share;
             ImageView im_download;
             ImageView im_delete;
             ImageView im_watch;
@@ -493,6 +508,38 @@ public class ShopsDetailActivity extends Activity {
             LinearLayout ll_bottom_right;
             TextView tv_product_name;
         }
+    }
+
+    private void showShare(String pathUrl,String name)
+    {
+
+
+        ShareSDK.initSDK(this);
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+        if (pathUrl != null && name!=null)
+        {
+            // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间等使用
+            oks.setTitle(name);
+            // titleUrl是标题的网络链接，QQ和QQ空间等使用
+            oks.setTitleUrl(pathUrl);
+            // text是分享文本，所有平台都需要这个字段
+            oks.setText("扫描二维码即可下单购买！");
+            // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+            oks.setImageUrl(pathUrl);//确保SDcard下面存在此张图片
+            // url仅在微信（包括好友和朋友圈）中使用
+            //oks.setUrl(pathUrl);
+            // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+            oks.setComment(getString(R.string.app_name));
+            // site是分享此内容的网站名称，仅在QQ空间使用
+            oks.setSite(getString(R.string.app_name));
+            // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+            oks.setSiteUrl(pathUrl);
+            // 启动分享GUI
+            oks.show(this);
+        }
+
     }
 
     private void downLoadDialog() {
