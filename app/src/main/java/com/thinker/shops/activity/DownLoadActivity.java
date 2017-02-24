@@ -20,16 +20,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.thinker.shops.R;
 import com.thinker.shops.bean.DataItem;
 import com.thinker.shops.bean.ProductItem;
 import com.thinker.shops.db.MyDbOpenHelper;
 import com.thinker.shops.http.HttpClient;
-
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -145,13 +142,15 @@ public class DownLoadActivity extends Activity {
     public class MyThread extends Thread {
         @Override
         public void run() {
+            //http://dev.wecity.co/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
+            //http://laimihui.china1h.cn/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
+
             try {
                 HttpClient httpClient = new HttpClient();
                 for (int i = 0; i < productList.size(); i++) {
-
                     productList.get(i).setFlagStatus("正在下载中");
                     objectId = Long.toString(productList.get(i).getObjectId());
-                    pathUrl = "http://laimihui.china1h.cn/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
+                    pathUrl = "http://dev.wecity.co/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
                     byte[] byteData = httpClient.getData(pathUrl);
                     // SD卡的路径
                     String sdCardPath = getSDCardPath();
@@ -181,7 +180,6 @@ public class DownLoadActivity extends Activity {
     }
 
     private void setData() {
-
         ProductAdapter adapter = new ProductAdapter();
         mListPruduct.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -290,9 +288,8 @@ public class DownLoadActivity extends Activity {
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
-
-            if (i == productList.size()) {
-
+            if (i == productList.size())
+            {
                 finish();
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(DownLoadActivity.this);

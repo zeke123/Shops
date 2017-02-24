@@ -46,6 +46,9 @@
         <activity android:name=".activity.DownLoadActivity"
                   android:screenOrientation="portrait"/>
 
+        <activity android:name=".activity.ImagePagerActivity"
+                  android:screenOrientation="portrait"/>
+
         <activity
             android:name="com.mob.tools.MobUIShell"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"

@@ -207,24 +207,26 @@ public class ShopsDetailActivity extends Activity {
                     Toast.makeText(ShopsDetailActivity.this, "图片还未下载", Toast.LENGTH_SHORT).show();
                 } else {
 
-                   /* Intent intent = new Intent(ShopsDetailActivity.this, SingleImgActivity.class);
-                    intent.putExtra("mStringPath", mUrl);
-                    intent.putExtra("prodectName", prodectName);
-                    startActivity(intent);*/
                     queryDb();
                     if (dataList != null && dataList.size() > 0) {
                         pictureList.clear();
                         for (int i = 0; i < dataList.size(); i++) {
-                            if ("1".equals(dataList.get(i).getIsWatch()) && ((!("null".equals(dataList.get(i).
+                            if (((!("null".equals(dataList.get(i).
                                     getNewictureUrl()))) || !TextUtils.isEmpty(dataList.get(i).getNewictureUrl()))) {
                                 pictureList.add(dataList.get(i).getNewictureUrl());
                             }
                         }
                         if (pictureList != null && pictureList.size() > 0) {
-                            Intent intent = new Intent(ShopsDetailActivity.this, KannerActivity.class);
+                           /* Intent intent = new Intent(ShopsDetailActivity.this, KannerActivity.class);
                             intent.putStringArrayListExtra("pictureList", pictureList);
                             intent.putExtra("mStringPath", mUrl);
-                            startActivity(intent);
+                            startActivity(intent);*/
+
+
+                            imageBrower(postion, pictureList);
+
+
+
                         } else {
                             Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
                             return;
@@ -233,6 +235,8 @@ public class ShopsDetailActivity extends Activity {
                 }
             }
         });
+
+
 
         //下载的点击按钮
         mBtDownload.setOnClickListener(new View.OnClickListener()
@@ -274,15 +278,19 @@ public class ShopsDetailActivity extends Activity {
                     Toast.makeText(getApplicationContext(),"当前无网络连接，请检查后重试", Toast.LENGTH_SHORT).show();
 
                 }
-
-
-
-
-
-
             }
         });
     }
+
+
+
+    protected void imageBrower(int position, ArrayList<String> urls2) {
+        Intent intent = new Intent(ShopsDetailActivity.this, ImagePagerActivity.class);
+        intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_URLS, urls2);
+        intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_INDEX, position);
+        startActivity(intent);
+    }
+
 
     private void initData()
     {
@@ -295,6 +303,7 @@ public class ShopsDetailActivity extends Activity {
     class MyAdater extends BaseAdapter
     {
         private String mShowimg;
+        private String newShowimg;
         private String mUrl;
         private String mWatch;
         private String productName;
@@ -346,10 +355,18 @@ public class ShopsDetailActivity extends Activity {
                 view.setTag(holder);
             }
             if (dataList != null && dataList.size() > 0) {
+
+
                 //下载的图片是否为null
                 mUrl = dataList.get(position).getNewictureUrl();
                 mShowimg = dataList.get(position).getPadshowimg();
-                String newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
+
+                objectId =  dataList.get(position).getObjectId();
+                if(objectId<=0){
+                     newShowimg =mShowimg;
+                }else{
+                     newShowimg = mShowimg.replace("/home/thinker/wwwroot/", "http://");
+                }
                 Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
 
                  productName =  dataList.get(position).getProductName();
@@ -508,7 +525,6 @@ public class ShopsDetailActivity extends Activity {
         class ViewHolder {
             ImageView im_picture;
             ImageView im_botoom;
-
             ImageView im_share;
             ImageView im_download;
             ImageView im_delete;

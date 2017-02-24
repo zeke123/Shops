@@ -1,12 +1,10 @@
 package com.thinker.shops.volley;
 
 import android.content.Context;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request.Method;
 import com.android.volley.toolbox.StringRequest;
 import com.thinker.shops.MyApplication;
-
 import java.util.Map;
 
 public class VolleyRequest {

@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
+import com.thinker.shops.ConstantValue;
 import com.thinker.shops.MyApplication;
 import com.thinker.shops.R;
 import com.thinker.shops.bean.BackData;
@@ -93,7 +94,6 @@ public class MainActivity extends Activity
             @Override
             public void onMyError(VolleyError error)
             {
-
                 Toast.makeText(MainActivity.this, "当前无网络连接，请检查后重试", Toast.LENGTH_SHORT).show();
             }
         });
@@ -185,18 +185,20 @@ public class MainActivity extends Activity
     private void initDatas(final String name)
     {
 
+        //http://laimihui.china1h.cn/task/mall/paddemo/selectCommunityByDomain.do
         //"http://dev.wecity.co/task/mall/paddemo/selectCommunityByDomain.do"
         //http://laimihui.china1h.cn
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("domain", name);
 
         VolleyRequest.requestPost(getApplicationContext(),
-                "http://laimihui.china1h.cn/task/mall/paddemo/selectCommunityByDomain.do", "myTAG", params, new VolleyInterface(
-                        MainActivity.this, VolleyInterface.mListener,
+                ConstantValue.LOGIN_URL, "myTAG", params, new VolleyInterface( MainActivity.this,
+                        VolleyInterface.mListener,
                         VolleyInterface.mErrorListener)
                 {
                     private String mData;
                     private String mStatus;
+
                     @Override
                     public void onMySuccess(String resault)
                     {

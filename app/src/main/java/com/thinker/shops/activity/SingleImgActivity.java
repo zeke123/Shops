@@ -55,15 +55,12 @@ public class SingleImgActivity extends Activity
         mPath = getIntent().getStringExtra("mStringPath");
         prodectName = getIntent().getStringExtra("prodectName");
 
-
         pathUrl =SharedPreferencesUtils.getString(SingleImgActivity.this,"pathUrl",null);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 1;
         bm = BitmapFactory.decodeFile(mPath, options);
         mImgBottom.setImageBitmap(bm);
         clickEvent();
-
-
     }
 
     private void clickEvent() {
@@ -76,7 +73,6 @@ public class SingleImgActivity extends Activity
                 saveImageToGallery(SingleImgActivity.this, bm);
             }
         });
-
         //分享
         mImShare.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -8,10 +8,10 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.alibaba.fastjson.JSONObject;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
+import com.thinker.shops.ConstantValue;
 import com.thinker.shops.R;
 import com.thinker.shops.bean.BackData;
 import com.thinker.shops.bean.DataItem;
@@ -19,7 +19,6 @@ import com.thinker.shops.bean.JsonDatas;
 import com.thinker.shops.utils.SharedPreferencesUtils;
 import com.thinker.shops.volley.VolleyInterface;
 import com.thinker.shops.volley.VolleyRequest;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,13 +76,14 @@ public class SplashActivity extends Activity
     private void initDatas(final String name)
     {
 
+        //http://laimihui.china1h.cn/task/mall/paddemo/selectCommunityByDomain.do
         //"http://dev.wecity.co/task/mall/paddemo/selectCommunityByDomain.do"
         //http://laimihui.china1h.cn
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("domain", name);
 
         VolleyRequest.requestPost(getApplicationContext(),
-                "http://laimihui.china1h.cn/task/mall/paddemo/selectCommunityByDomain.do", "myTAG", params, new VolleyInterface(
+                ConstantValue.LOGIN_URL, "myTAG", params, new VolleyInterface(
                         SplashActivity.this, VolleyInterface.mListener,
                         VolleyInterface.mErrorListener)
                 {
