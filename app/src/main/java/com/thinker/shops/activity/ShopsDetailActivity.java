@@ -213,9 +213,9 @@ public class ShopsDetailActivity extends Activity
                     for (int i = 0; i < dataList.size(); i++) {
 
 
-                        boolean b1 = !("null".equals(dataList.get(i).getNewictureUrl()));
+                       // boolean b1 = !("null".equals(dataList.get(i).getNewictureUrl()));
 
-                        boolean b2 = !("0".equals(dataList.get(i).getIsWatch()));
+                       // boolean b2 = !("0".equals(dataList.get(i).getIsWatch()));
 
                         if (((!("null".equals(dataList.get(i).
                                 getNewictureUrl()))) && !TextUtils.isEmpty(dataList.get(i).getNewictureUrl()))) {
@@ -253,7 +253,6 @@ public class ShopsDetailActivity extends Activity
                             }
 
                         }
-
 
                         intent.putExtra("postion",mPostion);
                         startActivity(intent);
