@@ -16,6 +16,7 @@ import com.thinker.shops.R;
 import com.thinker.shops.bean.BackData;
 import com.thinker.shops.bean.DataItem;
 import com.thinker.shops.bean.JsonDatas;
+import com.thinker.shops.utils.AbbUtils;
 import com.thinker.shops.utils.SharedPreferencesUtils;
 import com.thinker.shops.volley.VolleyInterface;
 import com.thinker.shops.volley.VolleyRequest;
@@ -124,7 +125,11 @@ public class SplashActivity extends Activity
                     @Override
                     public void onMyError(VolleyError error)
                     {
-                        Toast.makeText(getApplicationContext(),"网络连接错误", Toast.LENGTH_SHORT).show();
+
+                        if(name!=null && !AbbUtils.isNetworkAvailable(SplashActivity.this)){
+                            Toast.makeText(getApplicationContext(),"网络连接错误", Toast.LENGTH_SHORT).show();
+
+                        }
                     }
                 });
     }

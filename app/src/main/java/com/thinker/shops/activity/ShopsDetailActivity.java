@@ -306,6 +306,7 @@ public class ShopsDetailActivity extends Activity
         startActivity(intent);
     }
 
+
     private void initData()
     {
         adater = new MyAdater();

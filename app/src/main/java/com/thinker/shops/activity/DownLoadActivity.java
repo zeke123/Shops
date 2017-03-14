@@ -19,25 +19,25 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.thinker.shops.R;
 import com.thinker.shops.bean.DataItem;
 import com.thinker.shops.bean.ProductItem;
 import com.thinker.shops.db.MyDbOpenHelper;
 import com.thinker.shops.http.HttpClient;
 import com.thinker.shops.view.CustomToast;
-
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+
+
 
 /**
  * Created by zhoujian on 2017/1/10.
  */
 
-public class DownLoadActivity extends Activity {
+public class DownLoadActivity extends Activity
+{
 
     public static final String TAG = "DownLoadActivity";
     public static final int FLAG = 0;
@@ -62,7 +62,6 @@ public class DownLoadActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
 
         setContentView(R.layout.activity_download);
         ButterKnife.inject(this);
@@ -247,7 +246,9 @@ public class DownLoadActivity extends Activity {
                 }
                 holder.tv_name.setText(productList.get(position).getProductName());
             }
+
             return view;
+
         }
     }
 

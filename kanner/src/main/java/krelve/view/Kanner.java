@@ -71,11 +71,9 @@ public class Kanner extends FrameLayout
 
         imagesUrls = imagesUrl;
 
-
         count = imagesUrl.length;
         // 添加事件监听
         initListener();
-       // ImageView iv= null;
 
       /*  for (int i = 0; i < count; i++) {
             iv = new ImageView(context);
@@ -86,8 +84,6 @@ public class Kanner extends FrameLayout
             iv.setImageBitmap(bm);
             imageViews.add(iv);
         }*/
-
-
 
 
     }
@@ -126,11 +122,13 @@ public class Kanner extends FrameLayout
             @Override
             public void onPageScrolled(int arg0, float arg1, int arg2)
             {
+
             }
 
             @Override
             public void onPageSelected(int index)
             {
+
             }
         });
     }
@@ -161,8 +159,6 @@ public class Kanner extends FrameLayout
     {
         @Override
         public int getCount() {
-          // return Integer.MAX_VALUE;
-           // return imageViews.size();
             return imagesUrls.length;
         }
 
@@ -184,7 +180,8 @@ public class Kanner extends FrameLayout
         }
 
         @Override
-        public boolean isViewFromObject(View arg0, Object arg1) {
+        public boolean isViewFromObject(View arg0, Object arg1)
+        {
             return arg0 == arg1;
         }
 
@@ -195,33 +192,24 @@ public class Kanner extends FrameLayout
                 String resId = imagesUrls[position];
                 if (resId != null) {
                     ImageView itemView = new ImageView(context);
-
-
                     itemView.setScaleType(ImageView.ScaleType.FIT_XY);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inSampleSize = 4;
                     Bitmap bm = BitmapFactory.decodeFile(resId, options);
                     itemView.setImageBitmap(bm);
-
-
                     //此处假设所有的照片都不同，用resId唯一标识一个itemView；也可用其它Object来标识，只要保证唯一即可
                     itemView.setTag(resId);
-
                     ((ViewPager) container).addView(itemView);
                     return itemView;
                 }
             }
             return null;
-
-
            // ((ViewPager)container).addView(imageViews.get(position % imageViews.size()), 0);
            // return imageViews.get(position % imageViews.size());
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-
-
             if (object != null) {
                 ViewGroup viewPager = ((ViewGroup) container);
                 int count = viewPager.getChildCount();

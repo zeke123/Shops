@@ -41,7 +41,6 @@ public class KannerActivity extends Activity
             mStrings = mList.toArray(new String[mList.size()]);
             kanner.setImagesUrl(mStrings,postion);
         }
-
     }
 
     @Override
