@@ -378,7 +378,6 @@ public class ShopsDetailActivity extends Activity
                 //下载的图片是否为null
                 mUrl = dataList.get(position).getNewictureUrl();
                 mShowimg = dataList.get(position).getPadshowimg();
-
                 objectId =  dataList.get(position).getObjectId();
                 if(objectId<=0){
                      newShowimg =mShowimg;
@@ -408,7 +407,6 @@ public class ShopsDetailActivity extends Activity
                         holder.im_not_watch.setVisibility(View.GONE);
                     }
                 }
-
 
                 holder.im_share.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -586,7 +584,6 @@ public class ShopsDetailActivity extends Activity
             // 启动分享GUI
             oks.show(this);
         }
-
     }
 
     private void downLoadDialog() {
