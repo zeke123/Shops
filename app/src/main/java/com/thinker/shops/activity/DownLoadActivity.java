@@ -29,9 +29,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-
-
-
+        
 /**
  * Created by zhoujian on 2017/1/10.
  */

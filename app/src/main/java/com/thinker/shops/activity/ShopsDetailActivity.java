@@ -213,9 +213,9 @@ public class ShopsDetailActivity extends Activity
                     for (int i = 0; i < dataList.size(); i++) {
 
 
-                       // boolean b1 = !("null".equals(dataList.get(i).getNewictureUrl()));
+                        boolean b1 = !("null".equals(dataList.get(i).getNewictureUrl()));
 
-                       // boolean b2 = !("0".equals(dataList.get(i).getIsWatch()));
+                        boolean b2 = !("0".equals(dataList.get(i).getIsWatch()));
 
                         if (((!("null".equals(dataList.get(i).
                                 getNewictureUrl()))) && !TextUtils.isEmpty(dataList.get(i).getNewictureUrl()))) {
@@ -227,6 +227,8 @@ public class ShopsDetailActivity extends Activity
                 Log.e(TAG," ConstantValue.pictureList==="+ ConstantValue.pictureList.size());
 
                 mUrl = dataList.get(postion).getNewictureUrl();
+
+
 
                 if ("null".equals(mUrl) || TextUtils.isEmpty(mUrl)) {
 
@@ -241,7 +243,19 @@ public class ShopsDetailActivity extends Activity
                     if (ConstantValue.pictureList != null && ConstantValue.pictureList.size() > 0) {
                         Intent intent = new Intent(ShopsDetailActivity.this, KannerActivity.class);
                       //  intent.putStringArrayListExtra("pictureList", pictureList);
-                        intent.putExtra("postion",postion);
+
+                        int mPostion = 0;
+                        for (int i = 0; i <ConstantValue.pictureList.size() ; i++) {
+
+                            if (mUrl.equals(ConstantValue.pictureList.get(i))){
+
+                                mPostion = i;
+                            }
+
+                        }
+
+
+                        intent.putExtra("postion",mPostion);
                         startActivity(intent);
 
                     } else {

@@ -8,7 +8,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 
-public class AbbUtils {
+public class AbbUtils
+{
 
 	/**
 	 * @param context
@@ -26,8 +27,7 @@ public class AbbUtils {
 		}
 		return null;
 	}
-	
-	
+
 	
 	/**
 	 * 版本号，动态获取应用程序的版本号
