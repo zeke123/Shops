@@ -1,6 +1,6 @@
-package com.thinker.shops.activity;
+        package com.thinker.shops.activity;
 
-import android.app.Activity;
+        import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -19,14 +19,17 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.thinker.shops.R;
 import com.thinker.shops.bean.DataItem;
 import com.thinker.shops.bean.ProductItem;
 import com.thinker.shops.db.MyDbOpenHelper;
 import com.thinker.shops.http.HttpClient;
+import com.thinker.shops.view.CustomToast;
+
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -59,6 +62,8 @@ public class DownLoadActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+
         setContentView(R.layout.activity_download);
         ButterKnife.inject(this);
         //服务器返回数据
@@ -76,7 +81,8 @@ public class DownLoadActivity extends Activity {
         //创建数据库
         mHelper = new MyDbOpenHelper(DownLoadActivity.this, "picturetable.db", null, 1);
         SQLdb = mHelper.getWritableDatabase();
-        Toast.makeText(this, "开始下载图片", Toast.LENGTH_SHORT).show();
+        CustomToast.showToast(DownLoadActivity.this,"开始下载图片");
+       // Toast.makeText(this, "开始下载图片", Toast.LENGTH_SHORT).show();
         //开启线程下载图片
         startDownLoaad();
         setData();
@@ -124,11 +130,15 @@ public class DownLoadActivity extends Activity {
                 i += 1;
                 switch (msg.what) {
                     case FLAG:
-                        Toast.makeText(DownLoadActivity.this, "第" + i + "张图片下载完成", Toast.LENGTH_SHORT).show();
+                        CustomToast.showToast(DownLoadActivity.this,"第" + i + "张图片下载完成");
+                        //Toast.makeText(DownLoadActivity.this, "第" + i + "张图片下载完成", Toast.LENGTH_SHORT).show();
                         productList.get(i - 1).setFlagStatus("下载完成");
                         setData();
                         if (i == productList.size()) {
-                            Toast.makeText(DownLoadActivity.this, "全部图片下载完成", Toast.LENGTH_SHORT).show();
+
+                            CustomToast.showToast(DownLoadActivity.this,"全部图片下载完成");
+                            //Toast.makeText(DownLoadActivity.this, "全部图片下载完成", Toast.LENGTH_SHORT).show();
+
                             return;
                         }
                         break;
@@ -149,12 +159,18 @@ public class DownLoadActivity extends Activity {
                 HttpClient httpClient = new HttpClient();
                 for (int i = 0; i < productList.size(); i++) {
                     productList.get(i).setFlagStatus("正在下载中");
+
                     objectId = Long.toString(productList.get(i).getObjectId());
-                    pathUrl = "http://dev.wecity.co/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
+                    pathUrl = "http://laimihui.china1h.cn/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
+
+                    //pathUrl= "http://dev.wecity.co/task/mall/paddemo/postimg.do?objectId=" + objectId + "&communityOid=" + commuityOid;
+
+                    //http://dev.wecity.co/task/mall/paddemo/postimg.do?objectId=20416022903460960&communityOid=8295683397117721
                     byte[] byteData = httpClient.getData(pathUrl);
                     // SD卡的路径
                     String sdCardPath = getSDCardPath();
-                    if (sdCardIsExit()) {
+                    if (sdCardIsExit())
+                    {
                         // 图片的保存路
                         img_path = sdCardPath + System.currentTimeMillis() + i + ".jpg";
                         FileOutputStream fos = new FileOutputStream(img_path, false);
@@ -201,6 +217,7 @@ public class DownLoadActivity extends Activity {
         public long getItemId(int i) {
             return 0;
         }
+
 
         @Override
         public View getView(int position, View convertView, ViewGroup group) {
@@ -272,6 +289,7 @@ public class DownLoadActivity extends Activity {
     /**
      * 判断SD卡是否可用
      */
+
     private static boolean sdCardIsExit() {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }

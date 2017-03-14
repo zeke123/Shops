@@ -19,7 +19,8 @@ public class BackData implements Serializable
     public void setObjectId(long objectId) {
         this.objectId = objectId;
     }
-    public ArrayList<DataItem> getProductList() {
+    public ArrayList<DataItem> getProductList()
+    {
         return productList;
     }
     public void setProductList(ArrayList<DataItem> productList) {

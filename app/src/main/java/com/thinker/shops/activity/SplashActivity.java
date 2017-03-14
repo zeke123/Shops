@@ -111,7 +111,12 @@ public class SplashActivity extends Activity
                         }
                         else if("ERROR".equals(mStatus)){
                             mData = jsonObject.getString("data");
-                            Toast.makeText(getApplicationContext(),mData, Toast.LENGTH_SHORT).show();
+
+                            if(mData!=null && mData.equals("entity not fount.")){
+
+                                Toast.makeText(getApplicationContext(),"社区店域名错误，请重新输入！", Toast.LENGTH_SHORT).show();
+
+                            }
                             return;
                         }
                     }

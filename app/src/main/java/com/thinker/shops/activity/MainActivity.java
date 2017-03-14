@@ -218,13 +218,19 @@ public class MainActivity extends Activity
                         }
                         else if("ERROR".equals(mStatus)){
                             mData = jsonObject.getString("data");
-                            Toast.makeText(getApplicationContext(),mData, Toast.LENGTH_SHORT).show();
+
+
+                            if(mData!=null && mData.equals("entity not fount.")){
+
+                                Toast.makeText(getApplicationContext(),"社区店域名错误，请重新输入！", Toast.LENGTH_SHORT).show();
+                            }
                             return;
                         }
                     }
                     @Override
                     public void onMyError(VolleyError error)
                     {
+
                         Toast.makeText(getApplicationContext(),"当前无网络连接，请检查后重试", Toast.LENGTH_SHORT).show();
                     }
                 });

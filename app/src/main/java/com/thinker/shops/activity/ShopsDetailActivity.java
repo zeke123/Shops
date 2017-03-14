@@ -27,9 +27,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.thinker.shops.ConstantValue;
 import com.thinker.shops.R;
 import com.thinker.shops.bean.DataItem;
 import com.thinker.shops.db.MyDbOpenHelper;
@@ -37,6 +37,7 @@ import com.thinker.shops.http.HttpClient;
 import com.thinker.shops.utils.AbbUtils;
 import com.thinker.shops.utils.DensityUtils;
 import com.thinker.shops.utils.SharedPreferencesUtils;
+import com.thinker.shops.view.CustomToast;
 
 import java.io.FileOutputStream;
 import java.io.Serializable;
@@ -55,7 +56,8 @@ import cn.sharesdk.onekeyshare.OnekeyShare;
  * Created by zhoujian on 2016/11/16.
  */
 
-public class ShopsDetailActivity extends Activity {
+public class ShopsDetailActivity extends Activity
+{
 
     public static final String TAG = "ShopsDetailActivity";
     @InjectView(R.id.bt_download)
@@ -63,11 +65,9 @@ public class ShopsDetailActivity extends Activity {
     private long exitTime;
     private Map<Integer, String> map = new HashMap<Integer, String>();
     private String pathUrl;
-    //用于要播放的图片
-    ArrayList<String> pictureList = new ArrayList<String>();
+    private ProgressDialog progre;
     @InjectView(R.id.im_personal)
     ImageButton mImPersonal;
-
     @InjectView(R.id.mGridViewImage)
     GridView mMGridViewImage;
     private int mWidth;
@@ -103,6 +103,16 @@ public class ShopsDetailActivity extends Activity {
         //查询数据库,并把数据存入集合
         queryDb();
         //线上数据
+
+        if (dataList != null && dataList.size() > 0) {
+            ConstantValue.pictureList.clear();
+            for (int i = 0; i < dataList.size(); i++) {
+                if (((!("null".equals(dataList.get(i).
+                        getNewictureUrl()))) || !TextUtils.isEmpty(dataList.get(i).getNewictureUrl()))) {
+                    ConstantValue.pictureList.add(dataList.get(i).getNewictureUrl());
+                }
+            }
+        }
         Log.e(TAG, "线上数据。。。。list==" + list.toString());
         Log.e(TAG, "数据库数据。。。dataList==" + dataList.toString());
         //初始化数据
@@ -112,7 +122,6 @@ public class ShopsDetailActivity extends Activity {
     }
 
     private void queryDb() {
-
         //存放本地数据库数据
         dataList = new ArrayList<DataItem>();
         Cursor c = SQLdb.query("picturetable", null, null, null, null, null, null, null);
@@ -188,55 +197,62 @@ public class ShopsDetailActivity extends Activity {
                 });
                 builder.setNegativeButton("否", null);
                 builder.show();
-
             }
         });
-
 
         mMGridViewImage.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             private String mUrl;
 
             @Override
             public void onItemClick(AdapterView<?> view, View view1, int postion, long l) {
+
                 queryDb();
-                mUrl = dataList.get(postion).getNewictureUrl();
 
-                String prodectName = dataList.get(postion).getProductName();
-
-                if ("null".equals(mUrl) || TextUtils.isEmpty(mUrl)) {
-                    Toast.makeText(ShopsDetailActivity.this, "图片还未下载", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    queryDb();
-                    if (dataList != null && dataList.size() > 0) {
-                        pictureList.clear();
-                        for (int i = 0; i < dataList.size(); i++) {
-                            if (((!("null".equals(dataList.get(i).
-                                    getNewictureUrl()))) || !TextUtils.isEmpty(dataList.get(i).getNewictureUrl()))) {
-                                pictureList.add(dataList.get(i).getNewictureUrl());
-                            }
-                        }
-                        if (pictureList != null && pictureList.size() > 0) {
-                           /* Intent intent = new Intent(ShopsDetailActivity.this, KannerActivity.class);
-                            intent.putStringArrayListExtra("pictureList", pictureList);
-                            intent.putExtra("mStringPath", mUrl);
-                            startActivity(intent);*/
+                if (dataList != null && dataList.size() > 0) {
+                    ConstantValue.pictureList.clear();
+                    for (int i = 0; i < dataList.size(); i++) {
 
 
-                            imageBrower(postion, pictureList);
+                       // boolean b1 = !("null".equals(dataList.get(i).getNewictureUrl()));
 
+                       // boolean b2 = !("0".equals(dataList.get(i).getIsWatch()));
 
-
-                        } else {
-                            Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
-                            return;
+                        if (((!("null".equals(dataList.get(i).
+                                getNewictureUrl()))) && !TextUtils.isEmpty(dataList.get(i).getNewictureUrl()))) {
+                            ConstantValue.pictureList.add(dataList.get(i).getNewictureUrl());
                         }
                     }
                 }
+
+                Log.e(TAG," ConstantValue.pictureList==="+ ConstantValue.pictureList.size());
+
+                mUrl = dataList.get(postion).getNewictureUrl();
+
+                if ("null".equals(mUrl) || TextUtils.isEmpty(mUrl)) {
+
+                    CustomToast.showToast(ShopsDetailActivity.this,"图片还未下载");
+                   // Toast.makeText(ShopsDetailActivity.this, "图片还未下载", Toast.LENGTH_SHORT).show();
+                } else {
+
+
+                    showDialog();
+                    progre.show();
+
+                    if (ConstantValue.pictureList != null && ConstantValue.pictureList.size() > 0) {
+                        Intent intent = new Intent(ShopsDetailActivity.this, KannerActivity.class);
+                      //  intent.putStringArrayListExtra("pictureList", pictureList);
+                        intent.putExtra("postion",postion);
+                        startActivity(intent);
+
+                    } else {
+                        CustomToast.showToast(ShopsDetailActivity.this,"没有要播放的图片");
+                        //Toast.makeText(ShopsDetailActivity.this, "没有要播放的图片", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                }
             }
         });
-
-
 
         //下载的点击按钮
         mBtDownload.setOnClickListener(new View.OnClickListener()
@@ -261,28 +277,27 @@ public class ShopsDetailActivity extends Activity {
                                 sListIterator.remove();
                             }
                         }
-
                         if(dataList!=null && dataList.size()>0){
                             Intent intent =  new Intent(ShopsDetailActivity.this,DownLoadActivity.class);
                             intent.putExtra("dataList",(Serializable) dataList);
                             intent.putExtra("commuityOid",commuityOid);
                             startActivity(intent);
                         }else{
-                            Toast.makeText(ShopsDetailActivity.this, "全部图片已下载完成", Toast.LENGTH_SHORT).show();
+                            CustomToast.showToast(ShopsDetailActivity.this,"全部图片已下载完成");
+                            //Toast.makeText(ShopsDetailActivity.this, "全部图片已下载完成", Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
 
                 }else{
+                    CustomToast.showToast(ShopsDetailActivity.this,"当前无网络连接，请检查后重试");
 
-                    Toast.makeText(getApplicationContext(),"当前无网络连接，请检查后重试", Toast.LENGTH_SHORT).show();
-
+                   // Toast.makeText(getApplicationContext(),"当前无网络连接，请检查后重试", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
     }
-
-
 
     protected void imageBrower(int position, ArrayList<String> urls2) {
         Intent intent = new Intent(ShopsDetailActivity.this, ImagePagerActivity.class);
@@ -290,7 +305,6 @@ public class ShopsDetailActivity extends Activity {
         intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_INDEX, position);
         startActivity(intent);
     }
-
 
     private void initData()
     {
@@ -316,18 +330,21 @@ public class ShopsDetailActivity extends Activity {
             return 0;
         }
 
-        public Object getItem(int position) {
+        public Object getItem(int position)
+        {
             return null;
         }
 
-        public long getItemId(int position) {
+        public long getItemId(int position)
+        {
             return 0;
         }
 
         public View getView(final int position, View convertView, ViewGroup parent) {
             View view;
             final ViewHolder holder;
-            if (convertView != null) {
+            if (convertView != null)
+            {
                 view = convertView;
                 holder = (ViewHolder) view.getTag();
             } else {
@@ -354,8 +371,8 @@ public class ShopsDetailActivity extends Activity {
                 param.height = pictureWidth;
                 view.setTag(holder);
             }
-            if (dataList != null && dataList.size() > 0) {
-
+            if (dataList != null && dataList.size() > 0)
+            {
 
                 //下载的图片是否为null
                 mUrl = dataList.get(position).getNewictureUrl();
@@ -369,7 +386,7 @@ public class ShopsDetailActivity extends Activity {
                 }
                 Glide.with(ShopsDetailActivity.this).load(newShowimg).into(holder.im_picture);
 
-                 productName =  dataList.get(position).getProductName();
+                productName =  dataList.get(position).getProductName();
                 holder.tv_product_name.setText(productName);
                 //holder.tv_product_name.setText("正宗福建平和琯溪红肉蜜柚红心柚子新鲜农家特产纯天然有机水果10斤装 3-4个");
                 if ("null".equals(mUrl) || TextUtils.isEmpty(mUrl)) {
@@ -484,7 +501,8 @@ public class ShopsDetailActivity extends Activity {
                                 holder.ll_bottom_right.setVisibility(View.VISIBLE);
                                 holder.im_download.setVisibility(View.GONE);
                                 queryDb();
-                                Toast.makeText(ShopsDetailActivity.this, "图片下载完成", Toast.LENGTH_SHORT).show();
+                                CustomToast.showToast(ShopsDetailActivity.this,"图片下载完成");
+                                //Toast.makeText(ShopsDetailActivity.this, "图片下载完成", Toast.LENGTH_SHORT).show();
                             }
                         };
                         Thread thread = new Thread() {
@@ -514,9 +532,7 @@ public class ShopsDetailActivity extends Activity {
                             }
                         };
                         thread.start();
-
                     }
-
                 });
             }
             return view;
@@ -535,10 +551,15 @@ public class ShopsDetailActivity extends Activity {
         }
     }
 
+    private void showDialog() {
+        progre = new ProgressDialog(ShopsDetailActivity.this);
+        progre.setMessage("请等候，页面跳转中...");
+        progre.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progre.setCanceledOnTouchOutside(false);
+    }
+
     private void showShare(String pathUrl,String name)
     {
-
-
         ShareSDK.initSDK(this);
         OnekeyShare oks = new OnekeyShare();
         //关闭sso授权
@@ -602,9 +623,15 @@ public class ShopsDetailActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
+        if(progre!=null){
+            progre.dismiss();
+        }
+
         queryDb();
+
         adater.notifyDataSetChanged();
     }
 
@@ -630,16 +657,14 @@ public class ShopsDetailActivity extends Activity {
         if (keyCode == KeyEvent.KEYCODE_BACK
                 && event.getAction() == KeyEvent.ACTION_DOWN) {
             if ((System.currentTimeMillis() - exitTime) > 2000) {
-                Toast.makeText(getApplicationContext(), "再按一次退出程序",
-                        Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "再按一次退出程序",Toast.LENGTH_SHORT).show();
+                CustomToast.showToast(ShopsDetailActivity.this,"再按一次退出程序");
                 exitTime = System.currentTimeMillis();
             } else {
                 moveTaskToBack(true);
             }
-
             return true;
         }
         return super.onKeyDown(keyCode, event);
     }
-
 }

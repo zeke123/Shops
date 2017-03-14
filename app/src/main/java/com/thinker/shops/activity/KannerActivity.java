@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Window;
 
+import com.thinker.shops.ConstantValue;
 import com.thinker.shops.R;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class KannerActivity extends Activity
     private Kanner kanner;
     private ArrayList<String> mList;
     private String[] mStrings;
+    private int postion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,17 +32,14 @@ public class KannerActivity extends Activity
 
         setContentView(R.layout.activity_kanner);
 
-
-
-        String  mPath = getIntent().getStringExtra("mStringPath");
-
         kanner = (Kanner) findViewById(R.id.kanner);
-
-        mList = getIntent().getStringArrayListExtra("pictureList");
+        postion= getIntent().getIntExtra("postion",0);
+        //mList = getIntent().getStringArrayListExtra("pictureList");
+        mList =  ConstantValue.pictureList;
         if (mList != null && mList.size() > 0)
         {
             mStrings = mList.toArray(new String[mList.size()]);
-            kanner.setImagesUrl(mStrings);
+            kanner.setImagesUrl(mStrings,postion);
         }
 
     }
@@ -48,7 +47,6 @@ public class KannerActivity extends Activity
     @Override
     protected void onDestroy()
     {
-        kanner.removeCallbacksAndMessages();
         super.onDestroy();
     }
 }
